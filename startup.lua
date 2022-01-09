@@ -6,6 +6,8 @@ MoniterX, MoniterY = term.getSize()
 -- support for volume
 -- repeat songs
 --clean up code
+-- toggle for shuffle
+
 
 DoUpdates = true
 
