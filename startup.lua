@@ -7,6 +7,9 @@ MoniterX, MoniterY = term.getSize()
 -- repeat songs
 --clean up code
 
+DoUpdates = true
+
+if DoUpdates == true then
 --start looking for updates
 term.clear()
 term.setCursorPos(math.floor((MoniterX / 2)) - 9,math.floor(MoniterY / 2))
@@ -34,7 +37,7 @@ else
     term.write("no update found")
     sleep(2)
 end
-
+end
 
 
 local PlayListMenuSize = 10
