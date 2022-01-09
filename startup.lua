@@ -10,38 +10,39 @@ MoniterX, MoniterY = term.getSize()
 DoUpdates = true
 
 if DoUpdates == true then
---start looking for updates
-term.clear()
-term.setCursorPos(math.floor((MoniterX / 2)) - 9,math.floor(MoniterY / 2))
-term.setTextColor(colors.white)
-term.setBackgroundColor(colors.black)
-term.write("looking for update")
-
---download update
-local update = http.get("https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/startup.lua")
-if update then
-    fs.delete("update.lua")
-    local updateFile = fs.open("update.lua", "w")
-    updateFile.write(update.readAll())
-    updateFile.close()
-    update.close()
-    fs.delete("old.lua")
-    shell.run("rename startup.lua old.lua")
-    shell.run("rename update.lua startup.lua")
-    fs.delete("old.lua")
-else
+    --start looking for updates
     term.clear()
     term.setCursorPos(math.floor((MoniterX / 2)) - 9,math.floor(MoniterY / 2))
     term.setTextColor(colors.white)
     term.setBackgroundColor(colors.black)
-    term.write("no update found")
-    sleep(2)
-end
+    term.write("looking for update")
+
+    --download update
+    local update = http.get("https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/startup.lua")
+    if update then
+        fs.delete("update.lua")
+        local updateFile = fs.open("update.lua", "w")
+        updateFile.write(update.readAll())
+        updateFile.close()
+        update.close()
+        fs.delete("old.lua")
+        shell.run("rename startup.lua old.lua")
+        shell.run("rename update.lua startup.lua")
+        fs.delete("old.lua")
+    else
+        term.clear()
+        term.setCursorPos(math.floor((MoniterX / 2)) - 9,math.floor(MoniterY / 2))
+        term.setTextColor(colors.white)
+        term.setBackgroundColor(colors.black)
+        term.write("no update found")
+        sleep(2)
+    end
 end
 
 
 local PlayListMenuSize = 10
 local SongsPlaylists = {}
+
 
 --shows a ui saying disk or computer
 term.clear()
@@ -113,14 +114,13 @@ local function TextCutOff(Text,CutOff)
 end
 
 local function PlayRandomSongInPlayList()
-    ----find a random song in the playlist
-    --local RandomSong = math.random(1,#SongsPlaylists[PlaylistPlayerHasOpen])
-    --local SongToPlay = SongsPlaylists[PlaylistPlayerHasOpen][RandomSong]
---
-    --CorrentSongBeingPlayed = SongToPlay
-    --CorrentSongPercent = 0
-    --SongByteProgress = 0
-    --SizeOfSongByteProgress = 0
+    local ShuffledSongs = {}
+    local SongsInPlaylist = fs.list(DriveToBootOff .. "songs/playlists/" .. PlaylistPlayerHasOpen)
+    
+
+    CorrentSongBeingPlayed = SongsInPlaylist[math.random(1,#SongsInPlaylist)]
+    CorrentSongPercent = 0
+    SongByteProgress = 0
 
 
 
@@ -296,6 +296,7 @@ local function PreformSongRender()
 
 end
 
+
 local function preformPopUp(Message)
     UserInput = ""
     
@@ -345,6 +346,7 @@ local function PlaySong()
             local speaker = peripheral.find("speaker")
 
             local decoder = dfpwm.make_decoder()
+            SongHasFinished = false
 
             SizeOfSongByteProgress = 0
             for chunk in io.lines("songs/playlists/" .. PlaylistPlayerHasOpen .. "/" .. CorrentSongBeingPlayed, 16 * 1024) do
@@ -375,12 +377,17 @@ local function PlaySong()
                 end
                 --debug("chunk played")
                 SongByteProgress = SongByteProgress + 1
+                if SongByteProgress == SizeOfSongByteProgress then
+                    SongHasFinished = true
+                end
             end
                 --debug("song played")
                 CorrentSongBeingPlayed = nil
                 CorrentSongPercent = 0
                 SongByteProgress = 0
-                PlayRandomSongInPlayList()
+                if SongHasFinished == true then
+                    PlayRandomSongInPlayList()
+                end
         else
             os.sleep(0)
 
