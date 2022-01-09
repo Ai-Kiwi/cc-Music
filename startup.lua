@@ -5,6 +5,7 @@ MoniterX, MoniterY = term.getSize()
 -- support for suffling
 -- support for volume
 -- repeat songs
+--clean up code
 
 --start looking for updates
 term.clear()
@@ -13,7 +14,27 @@ term.setTextColor(colors.white)
 term.setBackgroundColor(colors.black)
 term.write("looking for update")
 
-os.sleep(1)
+--download update
+local update = http.get("https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/startup.lua")
+if update then
+    local updateFile = fs.open("update.lua", "w")
+    updateFile.write(update.readAll())
+    updateFile.close()
+    update.close()
+    fs.delete("update.lua")
+    fs.delete("old.lua")
+    shell.run("rename startup.lua old.lua")
+    shell.run("rename update.lua startup.lua")
+    fs.delete("old.lua")
+else
+    term.clear()
+    term.setCursorPos(math.floor((MoniterX / 2)) - 9,math.floor(MoniterY / 2))
+    term.setTextColor(colors.white)
+    term.setBackgroundColor(colors.black)
+    term.write("no update found")
+    sleep(2)
+end
+
 
 
 local PlayListMenuSize = 10
