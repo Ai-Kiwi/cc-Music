@@ -20,11 +20,11 @@ term.write("looking for update")
 --download update
 local update = http.get("https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/startup.lua")
 if update then
+    fs.delete("update.lua")
     local updateFile = fs.open("update.lua", "w")
     updateFile.write(update.readAll())
     updateFile.close()
     update.close()
-    fs.delete("update.lua")
     fs.delete("old.lua")
     shell.run("rename startup.lua old.lua")
     shell.run("rename update.lua startup.lua")
