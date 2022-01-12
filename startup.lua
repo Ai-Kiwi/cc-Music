@@ -430,8 +430,10 @@ local function EventHandler()
             if MouseClickY > 2 and MouseClickY < (NumberOfPlayListsOnSystem +(3 + PlayerHasScrolledOnPlaylistMenu)) then
                 --look if they are clicking to delete a playlist
                 if MouseClickX == 1 then
-                    fs.delete(DriveToBootOff .. "songs/playlists/" .. SongsPlaylists[MouseClickY - 2 + PlayerHasScrolledOnPlaylistMenu])
-                    PlaylistPlayerHasOpen = nil
+                    if preformPopUp("type yes to confirm you would like to delete this") == "yes" then
+                        fs.delete(DriveToBootOff .. "songs/playlists/" .. SongsPlaylists[MouseClickY - 2 + PlayerHasScrolledOnPlaylistMenu])
+                        PlaylistPlayerHasOpen = nil
+                    end
                 else
                     PlaylistPlayerHasOpen = SongsPlaylists[MouseClickY - 2 + PlayerHasScrolledOnPlaylistMenu]
                 end
@@ -445,9 +447,11 @@ local function EventHandler()
             if MouseClickY > 4 and MouseClickY < NumberOfSongsInPlaylist + 6 + SongSelectionScroll then
                 --look if they are clicking on the remove butten
                 if MouseClickX == (1 + PlayListMenuSize) then
-                    fs.delete(DriveToBootOff .. "songs/playlists/" .. PlaylistPlayerHasOpen .. "/" .. SongsInPlaylists[MouseClickY - 5 + SongSelectionScroll])
-                    SongsInPlaylists = fs.list(DriveToBootOff .. "songs/playlists/" .. PlaylistPlayerHasOpen)
-                    NumberOfSongsInPlaylist = NumberOfSongsInPlaylist - 1
+                    if preformPopUp("type yes to confirm you would like to delete this") == "yes" then
+                        fs.delete(DriveToBootOff .. "songs/playlists/" .. PlaylistPlayerHasOpen .. "/" .. SongsInPlaylists[MouseClickY - 5 + SongSelectionScroll])
+                        SongsInPlaylists = fs.list(DriveToBootOff .. "songs/playlists/" .. PlaylistPlayerHasOpen)
+                        NumberOfSongsInPlaylist = NumberOfSongsInPlaylist - 1
+                    end
                 else
                     CorrentSongBeingPlayed = SongsInPlaylists[MouseClickY - 5 + SongSelectionScroll]
                     CorrentSongPercent = 0
