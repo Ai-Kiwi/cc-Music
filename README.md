@@ -5,7 +5,7 @@ inorder to downlaod this the easiest way is to run ```wget run https://raw.githu
 
 
 
-coming soon
+**coming soon**
  - settings menu
  - better gui
  - support for moniters
