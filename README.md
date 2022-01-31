@@ -1,6 +1,5 @@
 # cc-Music
-
-inorder to downlaod this the easiest way is to run 
+A simple music player gui for cc tweaked!
   
     
     
