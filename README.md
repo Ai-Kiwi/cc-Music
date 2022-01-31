@@ -1,6 +1,6 @@
 # cc-Music
 
-inorder to downlaod this the easiest way is to run ```wget run https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/startup.lua```    
+inorder to downlaod this the easiest way is to run 
   
     
     
@@ -11,3 +11,8 @@ inorder to downlaod this the easiest way is to run ```wget run https://raw.githu
  - support for moniters
  - toggle shuffle
  - queue
+
+```
+wget run https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/startup.lua
+```    
+
