@@ -10,7 +10,11 @@ A simple music player gui for cc tweaked!
  - support for moniters
  - toggle shuffle
  - queue
- - 
+ - support for scrolling
+ - settings menu
+ - suport for alot of speakers
+ - polish then upload my custem youtube video downloader to github :P
+ - polish support for phones
 
 
 # install
