@@ -19,6 +19,7 @@ A simple music player gui for cc tweaked!
  - update disk to have better text and also look a crap ton nicer
  - smoother video progress bar
  - full support for pausing videos
+ - fix bug that is when typing in user input past text stays
 
 
 # install
