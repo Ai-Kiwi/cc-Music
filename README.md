@@ -16,6 +16,7 @@ A simple music player gui for cc tweaked!
  - polish then upload my custem youtube video downloader to github :P
  - polish support for phones
  - add doubble buffering or use term.blit
+ - update disk to have better text and also look a crap ton nicer
 
 
 # install
