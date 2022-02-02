@@ -17,6 +17,8 @@ A simple music player gui for cc tweaked!
  - polish support for phones
  - add doubble buffering or use term.blit
  - update disk to have better text and also look a crap ton nicer
+ - smoother video progress bar
+ - full support for pausing videos
 
 
 # install
