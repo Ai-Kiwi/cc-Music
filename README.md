@@ -7,7 +7,7 @@ A simple music player gui for cc tweaked!
 **coming soon**
  - settings menu
  - better gui
- - support for moniters
+ - support for moniters (mode for playlist and mode for just video playing)
  - toggle shuffle
  - queue
  - support for scrolling
