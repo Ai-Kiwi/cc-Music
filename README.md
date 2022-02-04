@@ -22,6 +22,7 @@ A simple music player gui for cc tweaked!
  - fix bug that is when typing in user input past text stays
  - display for time left on song as well as the current progress into song and the leagth of the song
  - maybe fast forwarding?
+ - stop everything running off the stupid system of buffers and move over to time (maybe not all of it as if pc lag it could cause proleams)
 
 
 # install
