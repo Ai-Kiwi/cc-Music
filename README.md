@@ -20,6 +20,8 @@ A simple music player gui for cc tweaked!
  - smoother video progress bar
  - full support for pausing videos
  - fix bug that is when typing in user input past text stays
+ - display for time left on song as well as the current progress into song and the leagth of the song
+ - maybe fast forwarding?
 
 
 # install
