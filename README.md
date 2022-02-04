@@ -24,6 +24,7 @@ A simple music player gui for cc tweaked!
  - maybe fast forwarding?
  - stop everything running off the stupid system of buffers and move over to time (maybe not all of it as if pc lag it could cause proleams)
  - have volume slider on video player
+ - p2p or server song sharing
 
 
 # install
