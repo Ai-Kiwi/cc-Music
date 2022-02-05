@@ -26,6 +26,7 @@ A simple music player gui for cc tweaked!
  - have volume slider on video player
  - p2p or server song sharing
  - add sound effects
+ - stream videos from the cloud
 
 
 # install
