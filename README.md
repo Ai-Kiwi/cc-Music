@@ -5,29 +5,23 @@ A simple music player gui for cc tweaked!
     
     
 **coming soon**
- - settings menu
  - better gui
  - support for moniters (mode for playlist and mode for just video playing)
- - toggle shuffle
  - queue
- - support for scrolling
- - settings menu
  - suport for alot of speakers
  - polish then upload my custem youtube video downloader to github :P
  - polish support for phones
  - add doubble buffering or use term.blit
  - update disk to have better text and also look a crap ton nicer
  - smoother video progress bar
- - full support for pausing videos
- - fix bug that is when typing in user input past text stays
- - display for time left on song as well as the current progress into song and the leagth of the song
+ - add background to text input
  - maybe fast forwarding?
  - stop everything running off the stupid system of buffers and move over to time (maybe not all of it as if pc lag it could cause proleams)
  - have volume slider on video player
  - p2p or server song sharing
  - add sound effects
  - stream videos from the cloud
- - make system check web for updates
+ - make system check web for updates instead of always updating
 
 
 # install
