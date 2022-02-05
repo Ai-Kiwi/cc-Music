@@ -157,7 +157,7 @@ end
 
 
 
-DoUpdates = false
+DoUpdates = true
 if DoUpdates == true then
     DownloadFromWeb("https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/startup.lua","startup.lua")
 end
