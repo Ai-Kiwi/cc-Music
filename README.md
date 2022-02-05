@@ -33,4 +33,8 @@ A simple music player gui for cc tweaked!
 ```
 wget run https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/startup.lua
 ```    
-in order to download a youtube video please convert to cc tweaked format using music.madefor.cc and then after that please paste in the url under any 10 minute hosting website.
+in order to upload a song.
+ 1 : download song from youtube or whatever
+ 2 : convert to format using music.madefor.cc
+ 3 : upload to a website like 10 minute hosting
+ 4 : in app add a song using that url
