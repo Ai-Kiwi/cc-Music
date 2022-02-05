@@ -1,6 +1,7 @@
-verson = 1.1
+verson = 1.2
 MoniterX, MoniterY = term.getSize()
 DoUpdates = true
+
 
 --all the stuff for 
 
@@ -54,7 +55,7 @@ CreateNewSettings("SONG_BUFFER_SIZE","int",16,"Song buffer size","Song buffer si
 CreateNewSettings("SHUFFLE_VIDEO","boolean",true,"shuffle video","this apon will make it so apon video finish it will start playing another video in the playlist.")
 --CreateNewSettings("AUTO_FIND_SPEAKERS","boolean",true,"automatically find speakers","Enabling this will make the program automatically find speakers instead of making you set them yourself")
 --CreateNewSettings("LIST_OF_SPEAKERS","LIST_OF_STRINGS",{},"list of speakers","if you have automatically find spekaers off this will let you set a list of speakers so you can play on more then one.")
---CreateNewSettings("DOUBLE_BUFFERING","boolean",false,"double buffering","double buffering is a way where only after the image has fully been drawn will you be able to see it instead of allways showing it to you")
+CreateNewSettings("DOUBLE_BUFFERING","boolean",true,"double buffering","double buffering is a way where only after the image has fully been drawn will you be able to see it instead of allways showing it to you")
 --CreateNewSettings("DEBUG_LEVEL","range-1-5",1,"debug level","this value is what level the program will try tell you about any errors that happen. we ony suggest having this enabled if you keep having proleams")
 CreateNewSettings("VOLUME","range-0-100",100,"volume","this is the volume of the music")
 --CreateNewSettings("SOUND_EFFECTS","boolean",true,"sound effects","this will enable or disable sound effects")
@@ -200,20 +201,16 @@ if DoUpdates == true then
     DownloadFromWeb("https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/startup.lua","startup.lua")
 end
 
+local WindowObject = nil
 
---Startup doubble buffering
--- if ListOfSettings["DOUBLE_BUFFERING"]["Value"] == true then
---     DownloadFromWeb("https://raw.githubusercontent.com/Fatboychummy-CC/Frame/master/Frame.lua","Frame.lua")
---     FrameBuffer = require("Frame")
--- end
--- 
--- if ListOfSettings["DOUBLE_BUFFERING"]["Value"] == true then
---     BufferTerm = FrameBuffer.new(term.current())
---     BufferTerm.Initialize()
---     BufferTerm.PostRedisplay()
---     term.redirect(BufferTerm)
---     
--- end
+if ListOfSettings["DOUBLE_BUFFERING"]["Value"] == true then
+    WindowObject = window.create(term.current(), 1, 1, MoniterX, MoniterY)
+    WindowObject.setVisible(false)
+    term.redirect(WindowObject)
+
+    PromptWindowObject = window.create(term.current(), 1, 1, MoniterX, MoniterY)
+    PromptWindowObject.setVisible(false)
+end
 local PlayListMenuSize = 10
 local SongsPlaylists = {}
 
@@ -329,8 +326,20 @@ local function preformPopUp(Message)
 
         SizeOfTextBox = #UserInput
         
-        term.setBackgroundColor(colors.gray)
-        term.clear()
+        
+
+        if WindowObject == nil then
+            term.setBackgroundColor(colors.gray)
+            term.clear()
+            
+        else
+            
+            term.redirect(WindowObject)
+            WindowObject.setVisible(true)
+            WindowObject.redraw()
+            WindowObject.setVisible(false)
+            term.redirect(term.native())
+        end
 
         if SizeOfTextBox < #Message then
             SizeOfTextBox = #Message
@@ -347,6 +356,7 @@ local function preformPopUp(Message)
         term.setBackgroundColor(colors.black)
         term.setCursorPos((MoniterX / 2) - ((SizeOfTextBox / 2) + 0) + 1 ,(MoniterY / 2) + 1)
         term.write(Message)
+
     end
 
 end
@@ -388,10 +398,11 @@ local function SettingsMenu()
         term.setBackgroundColor(colors.red)
         term.write("X")
 
-        --bind all stuff for when they click
-        --if ListOfSettings["DOUBLE_BUFFERING"]["Value"] == true then
-        --    BufferTerm.PushBuffer()
-        --end
+        if WindowObject then
+            WindowObject.setVisible(true)
+            WindowObject.redraw()
+            WindowObject.setVisible(false)
+        end
         
         local EventOutput = {os.pullEvent()}
         if EventOutput[1] == "mouse_click" then
@@ -852,11 +863,11 @@ while true do
     term.setTextColor(colors.white)
     term.setBackgroundColor(colors.black)
 
-    --if ListOfSettings["DOUBLE_BUFFERING"]["Value"] == true then
-    --    BufferTerm.PostRedisplay()
-    --    BufferTerm.PushBuffer()
-    --    
-    --end
+    if WindowObject then
+        WindowObject.setVisible(true)
+        WindowObject.redraw()
+        WindowObject.setVisible(false)
+    end
     EventHandler()
 end
 end
