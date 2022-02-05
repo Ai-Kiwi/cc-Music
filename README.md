@@ -11,10 +11,9 @@ A simple music player gui for cc tweaked!
  - suport for alot of speakers
  - polish then upload my custem youtube video downloader to github :P
  - polish support for phones
- - add doubble buffering or use term.blit
  - update disk to have better text and also look a crap ton nicer
  - smoother video progress bar
- - add background to text input
+ - add full buffer on term input
  - maybe fast forwarding?
  - stop everything running off the stupid system of buffers and move over to time (maybe not all of it as if pc lag it could cause proleams)
  - have volume slider on video player
