@@ -1,5 +1,6 @@
 verson = 1.1
 MoniterX, MoniterY = term.getSize()
+DoUpdates = true
 
 --all the stuff for 
 
@@ -118,6 +119,12 @@ local function SecandsToTime(Secands,FormatMode)
     return OutPutString
 end
 
+local function PrintOnScreen()
+
+
+
+end
+
 local function DownloadFromWeb(URL,FilePath)
     --draw text that is start looking for updates
     local Text = "idk what im doing"
@@ -125,11 +132,43 @@ local function DownloadFromWeb(URL,FilePath)
     for i = 1, math.random(1,245) do FunnyTextSite.readLine() end
     Text = FunnyTextSite.readLine()
     FunnyTextSite.close()
+
+    
+    local LoopNumber = 0
+    local TextSize = #Text
+
+    while TextSize > MoniterX do
+        if TextSize > MoniterX then
+            TextSize = TextSize - MoniterX
+            LoopNumber = LoopNumber + 1
+        end
+    end
+    LoopNumber = LoopNumber + 1
     term.clear()
-    term.setCursorPos(math.floor((MoniterX / 2)) - math.floor(#Text / 2),math.floor(MoniterY / 2))
     term.setTextColor(colors.white)
     term.setBackgroundColor(colors.black)
-    term.write(Text)
+
+    for i=1, LoopNumber do
+        local XPOS = 1
+        if LoopNumber == i then
+            XPOS = math.floor(MoniterX / 2) - math.floor(TextSize / 2)
+        end
+
+        term.setCursorPos(XPOS,(MoniterY / 2) - math.floor(LoopNumber / 2) + i)
+        term.write(Text:sub((i * MoniterX) - MoniterX,i * MoniterX))
+    end
+
+    
+    --term.setCursorPos(math.floor((MoniterX / 2)) - math.floor(TextSize / 2),math.floor(MoniterY / 2) - math.floor(LoopNumber / 2))
+--
+    --term.write(string.sub(Text,0,MoniterX))
+    --if LoopNumber > 0 then
+    --    term.setCursorPos(1,math.floor(MoniterY / 2))
+    --    term.write(string.sub(Text,MoniterX + 1,TextSize))
+    --end
+
+    
+    
 
     --download update
     local update = http.get(URL .. "?cb=" .. os.epoch())
@@ -157,7 +196,6 @@ end
 
 
 
-DoUpdates = true
 if DoUpdates == true then
     DownloadFromWeb("https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/startup.lua","startup.lua")
 end
@@ -765,14 +803,14 @@ local function EventHandler()
                 local NewSongName = preformPopUp("Enter the name of the song")
 
                 --download song
-                local SongFile = http.get(URL,nil,true)
                 local SongFileName = DriveToBootOff .. "songs/playlists/" .. PlaylistPlayerHasOpen .. "/" .. NewSongName
-                if SongFile then
-                    local SongFileHandle = fs.open(SongFileName, "wb")
-                    SongFileHandle.write(SongFile.readAll())
-                    SongFileHandle.close()
-                    SongFile.close()
-                end
+                --if SongFile then
+                --    local SongFileHandle = fs.open(SongFileName, "wb")
+                --    SongFileHandle.write(SongFile.readAll())
+                --    SongFileHandle.close()
+                --    SongFile.close()
+                --end
+                DownloadFromWeb(URL,SongFileName)
             end
         end
     elseif EventName == "mouse_scroll" then
