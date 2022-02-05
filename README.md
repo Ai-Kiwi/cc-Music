@@ -27,6 +27,7 @@ A simple music player gui for cc tweaked!
  - p2p or server song sharing
  - add sound effects
  - stream videos from the cloud
+ - make system check web for updates
 
 
 # install
