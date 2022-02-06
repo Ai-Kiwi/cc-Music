@@ -26,6 +26,7 @@ A simple music player gui for cc tweaked!
  - auto start playing playlist on server restart
  - drag n drop
  - fix song breaking apon switching audio
+ - search
 
 
 # install
