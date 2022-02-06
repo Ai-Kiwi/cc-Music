@@ -24,6 +24,7 @@ A simple music player gui for cc tweaked!
  - fix exit settings crash
  - make there be a settings for playlists settings size
  - auto start playing playlist on server restart
+ - drag n drop
 
 
 # install
