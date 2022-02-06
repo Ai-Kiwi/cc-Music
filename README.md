@@ -23,6 +23,7 @@ A simple music player gui for cc tweaked!
  - make system check web for updates instead of always updating
  - fix exit settings crash
  - make there be a settings for playlists settings size
+ - auto start playing playlist on server restart
 
 
 # install
