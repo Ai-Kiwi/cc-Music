@@ -408,7 +408,7 @@ local function SettingsMenu()
         if EventOutput[1] == "mouse_click" then
             local X,Y = EventOutput[3],EventOutput[4]
             if X == MoniterX and Y == 1 then
-
+                term.redirect(WindowObject)
                 return
 
             else
