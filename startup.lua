@@ -1,4 +1,4 @@
-verson = "1.2.1"
+verson = "1.2.2"
 MoniterX, MoniterY = term.getSize()
 DoUpdates = true
 
@@ -120,13 +120,10 @@ local function SecandsToTime(Secands,FormatMode)
     return OutPutString
 end
 
-local function PrintOnScreen()
 
+local WindowObject = nil
 
-
-end
-
-local function DownloadFromWeb(URL,FilePath)
+local function DownloadFromWeb(URL,FilePath,DontBufferBreakURL,UseBin)
     --draw text that is start looking for updates
     local Text = "idk what im doing"
     FunnyTextSite = http.get("https://gist.githubusercontent.com/meain/6440b706a97d2dd71574769517e7ed32/raw/4d5b4156027ac1605983dacaa78cf41bbd75be71/loading_messages.js")
@@ -159,6 +156,12 @@ local function DownloadFromWeb(URL,FilePath)
         term.write(Text:sub((i * MoniterX) - MoniterX,i * MoniterX))
     end
 
+    if WindowObject then
+        WindowObject.setVisible(true)
+        WindowObject.redraw()
+        WindowObject.setVisible(false)
+    end
+
     
     --term.setCursorPos(math.floor((MoniterX / 2)) - math.floor(TextSize / 2),math.floor(MoniterY / 2) - math.floor(LoopNumber / 2))
 --
@@ -170,13 +173,22 @@ local function DownloadFromWeb(URL,FilePath)
 
     
     
-
+    local update = nil
     --download update
-    local update = http.get(URL .. "?cb=" .. os.epoch())
+    if DontBufferBreakURL then
+        update = http.get(URL,nil,UseBin)
+    else
+        update = http.get(URL .. "?cb=" .. os.epoch(),nil,UseBin)
+    end
     if update then
         --preform updating 
         fs.delete(FilePath..".new")
-        local updateFile = fs.open(FilePath .. ".new", "w")
+        local updateFile = nil
+        if UseBin then
+            updateFile = fs.open(FilePath .. ".new", "wb")
+        else
+            updateFile = fs.open(FilePath .. ".new", "w")
+        end
         updateFile.write(update.readAll())
         updateFile.close()
         update.close()
@@ -201,7 +213,7 @@ if DoUpdates == true then
     DownloadFromWeb("https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/startup.lua","startup.lua")
 end
 
-local WindowObject = nil
+
 
 if ListOfSettings["DOUBLE_BUFFERING"]["Value"] == true then
     WindowObject = window.create(term.current(), 1, 1, MoniterX, MoniterY)
@@ -338,7 +350,7 @@ local function preformPopUp(Message)
             WindowObject.setVisible(true)
             WindowObject.redraw()
             WindowObject.setVisible(false)
-            term.redirect(WindowObject)
+            term.redirect(term.native())
         end
 
         if SizeOfTextBox < #Message then
@@ -356,6 +368,10 @@ local function preformPopUp(Message)
         term.setBackgroundColor(colors.black)
         term.setCursorPos((MoniterX / 2) - ((SizeOfTextBox / 2) + 0) + 1 ,(MoniterY / 2) + 1)
         term.write(Message)
+
+        if WindowObject then
+            term.redirect(WindowObject)
+        end
 
     end
 
@@ -797,7 +813,7 @@ local function EventHandler()
                 --look if they are clicking on the remove butten
                 if MouseClickX == (1 + PlayListMenuSize) then
                     if preformPopUp("type yes to confirm you would like to delete this") == "yes" then
-                        fs.delete(DriveToBootOff .. "songs/playlists/" .. PlaylistPlayerHasOpen .. "/" .. SongsInPlaylists[MouseClickY - 5 + SongSelectionScroll])
+                        fs.delete(DriveToBootOff .. "songs/playlists/" .. PlaylistPlayerHasOpen .. "/" .. SongsInPlaylists[MouseClickY - 5 - SongSelectionScroll])
                         SongsInPlaylists = fs.list(DriveToBootOff .. "songs/playlists/" .. PlaylistPlayerHasOpen)
                         NumberOfSongsInPlaylist = NumberOfSongsInPlaylist - 1
                     end
@@ -821,7 +837,7 @@ local function EventHandler()
                 --    SongFileHandle.close()
                 --    SongFile.close()
                 --end
-                DownloadFromWeb(URL,SongFileName)
+                DownloadFromWeb(URL,SongFileName,true,true)
             end
         end
     elseif EventName == "mouse_scroll" then
