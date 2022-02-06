@@ -1,4 +1,4 @@
-verson = 1.2
+verson = "1.2.1"
 MoniterX, MoniterY = term.getSize()
 DoUpdates = true
 
@@ -338,7 +338,7 @@ local function preformPopUp(Message)
             WindowObject.setVisible(true)
             WindowObject.redraw()
             WindowObject.setVisible(false)
-            term.redirect(term.native())
+            term.redirect(WindowObject)
         end
 
         if SizeOfTextBox < #Message then
@@ -793,7 +793,7 @@ local function EventHandler()
             --looks if they are clicking on the song player menu
         else
             --looks if they are clicking on a song
-            if MouseClickY > 4 and MouseClickY < NumberOfSongsInPlaylist + 6 - SongSelectionScroll then
+            if MouseClickY > 4 + SongSelectionScroll and MouseClickY < NumberOfSongsInPlaylist + 6 + SongSelectionScroll then
                 --look if they are clicking on the remove butten
                 if MouseClickX == (1 + PlayListMenuSize) then
                     if preformPopUp("type yes to confirm you would like to delete this") == "yes" then
@@ -809,7 +809,7 @@ local function EventHandler()
                     SongByteProgress = 0
                 end
                 --look if they are clicking on the addnew butten
-            elseif MouseClickY == (6 + NumberOfSongsInPlaylist - SongSelectionScroll) then
+            elseif MouseClickY == (6 + NumberOfSongsInPlaylist + SongSelectionScroll) then
                 local URL = preformPopUp("Enter the URL of the song")
                 local NewSongName = preformPopUp("Enter the name of the song")
 
