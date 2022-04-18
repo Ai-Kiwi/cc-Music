@@ -5,19 +5,15 @@ A simple music player gui for cc tweaked!
   
 ```
 wget run https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/startup.lua
-```    
-in order to upload a song.  
+```  
+# how to use  
+  
+**in order to upload a song.**  
  1 : download song from youtube or whatever  
  2 : convert to format using music.madefor.cc  
  3 : upload to a website like 10 minute hosting  
  4 : in app add a song using that url  
   
-# how to use  
-**Install songs**   
- - 1, head over to music.madefor.cc to get the dfpwm file  
- - 2, head over to a website like 10 minute hosting then get your download link  
- - 3, after making a playlist (with + butten) click the new song icon then type in url and then type in name of song   
-
 **Load Program**  
  - 1, due to toaster os ecosystem by defult CC-Music now installs it's self under `UserData/Apps/CC-Music/startup.lua`  
     
