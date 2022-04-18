@@ -1,5 +1,16 @@
 # cc-Music
 A simple music player gui for cc tweaked!
+
+# install
+  
+```
+wget run https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/startup.lua
+```    
+in order to upload a song.  
+ 1 : download song from youtube or whatever  
+ 2 : convert to format using music.madefor.cc  
+ 3 : upload to a website like 10 minute hosting  
+ 4 : in app add a song using that url  
   
 # how to use  
 **Install songs**   
@@ -33,15 +44,3 @@ A simple music player gui for cc tweaked!
  - drag n drop
  - fix song breaking apon switching audio
  - search
-
-
-# install
-
-```
-wget run https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/startup.lua
-```    
-in order to upload a song.  
- 1 : download song from youtube or whatever  
- 2 : convert to format using music.madefor.cc  
- 3 : upload to a website like 10 minute hosting  
- 4 : in app add a song using that url  
