@@ -40,3 +40,4 @@ wget run https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/startup.lua
  - drag n drop
  - fix song breaking apon switching audio
  - search
+ - add better support with toaster os resizeing
