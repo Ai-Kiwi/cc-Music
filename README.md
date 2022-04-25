@@ -28,6 +28,7 @@ wget run https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/startup.lua
  - smoother video progress bar
  - add full buffer on term input
  - maybe fast forwarding?
+ - skip song
  - stop everything running off the stupid system of buffers and move over to time (maybe not all of it as if pc lag it could cause proleams)
  - have volume slider on video player
  - p2p or server song sharing
