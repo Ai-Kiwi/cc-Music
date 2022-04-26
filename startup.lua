@@ -8,7 +8,7 @@ DoUpdates = true
 ListOfSettings = {}
 VALUES_LOADED_IN = {}
 
-local file = fs.open("CC-MUSIC.config","r")
+local file = fs.open("CCMUSIC.config","r")
 if file then
     VALUES_LOADED_IN = file.readAll()
     file.close()
@@ -17,7 +17,7 @@ if file then
 end
 
 local function SaveSettings()
-    local file = fs.open("CC-MUSIC.config","w")
+    local file = fs.open("CCMUSIC.config","w")
     local NewListOfSettings = {}
     
     for i,v in pairs(ListOfSettings) do
@@ -210,8 +210,7 @@ end
 
 
 if DoUpdates == true then
-    fs.makeDir("UserData/Apps/CC-Music/")
-    DownloadFromWeb("https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/startup.lua","CC-Music.lua")
+    DownloadFromWeb("https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/startup.lua","CCMusic.lua")
 end
 
 
