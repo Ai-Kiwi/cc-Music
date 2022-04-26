@@ -211,7 +211,7 @@ end
 
 if DoUpdates == true then
     fs.makeDir("UserData/Apps/CC-Music/")
-    DownloadFromWeb("https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/startup.lua","UserData/Apps/CC-Music/startup.lua")
+    DownloadFromWeb("https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/startup.lua","CC-Music.lua")
 end
 
 
