@@ -13,9 +13,6 @@ wget run https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/startup.lua
  2 : convert to format using music.madefor.cc  
  3 : upload to a website like 10 minute hosting  
  4 : in app add a song using that url  
-  
-**Load Program**  
- - 1, due to toaster os ecosystem by defult CC-Music now installs it's self under `UserData/Apps/CC-Music/startup.lua`  
     
 # maybe coming soon
  - better gui
