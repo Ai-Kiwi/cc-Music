@@ -41,6 +41,4 @@ wget run https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/startup.lua
  - drag n drop
  - fix song breaking apon switching audio
  - search
- - add better support with toaster os resizeing
- - better support for toaster os (where songs installed) and also make none toaster os install
  - auto start playing songs on program boot
