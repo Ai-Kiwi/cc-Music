@@ -39,3 +39,4 @@ wget run https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/startup.lua
  - fix song breaking apon switching audio
  - search
  - auto start playing songs on program boot
+ - auto updating smartly updating the right file
