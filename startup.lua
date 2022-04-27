@@ -56,7 +56,6 @@ CreateNewSettings("SHUFFLE_VIDEO","boolean",true,"shuffle video","this apon will
 --CreateNewSettings("AUTO_FIND_SPEAKERS","boolean",true,"automatically find speakers","Enabling this will make the program automatically find speakers instead of making you set them yourself")
 --CreateNewSettings("LIST_OF_SPEAKERS","LIST_OF_STRINGS",{},"list of speakers","if you have automatically find spekaers off this will let you set a list of speakers so you can play on more then one.")
 CreateNewSettings("DOUBLE_BUFFERING","boolean",true,"double buffering","double buffering is a way where only after the image has fully been drawn will you be able to see it instead of allways showing it to you")
---CreateNewSettings("DEBUG_LEVEL","range-1-5",1,"debug level","this value is what level the program will try tell you about any errors that happen. we ony suggest having this enabled if you keep having proleams")
 CreateNewSettings("VOLUME","range-0-100",100,"volume","this is the volume of the music")
 --CreateNewSettings("SOUND_EFFECTS","boolean",true,"sound effects","this will enable or disable sound effects")
 
@@ -238,12 +237,7 @@ term.write("disk")
 
 local DriveToBootOff = ""
 
-fs.delete("songs/debug.txt")
-local function debug(text)
-    DebugText = fs.open("songs/debug.txt", "a")
-    DebugText.writeLine(text)
-    DebugText.close()
-end
+
 
 --scan through drive asking if to use disk
 local DiskDrive = peripheral.find("drive")
@@ -668,9 +662,9 @@ end
 local buffer = ""
 
 local function PlaySong()
-    --debug("playing song")
+
     while true do
-        --debug("looking if there is song to play")
+
         if CorrentSongBeingPlayed then
             local dfpwm = require("cc.audio.dfpwm")
             local speaker = peripheral.find("speaker")
@@ -681,7 +675,7 @@ local function PlaySong()
             SizeOfSongByteProgress = 0
             for chunk in io.lines("songs/playlists/" .. CorrentSongBeingPlayedPlaylist .. "/" .. CorrentSongBeingPlayed, ListOfSettings["SONG_BUFFER_SIZE"]["Value"] * 1024) do
                 SizeOfSongByteProgress = SizeOfSongByteProgress + 1
-                --debug(SizeOfSongByteProgress)
+
             end
             
             SongByteProgress = 0
@@ -716,8 +710,7 @@ local function PlaySong()
                         end
 
                     else
-                        --debug("song is not playing")
-                        --os.reboot()
+
                         speaker.stop()
                         break
                     end
@@ -726,7 +719,7 @@ local function PlaySong()
                 if CorrentSongBeingPlayed == nil then
                     break
                 end
-                --debug("chunk played")
+
                 SongByteProgress = SongByteProgress + 1
                 if SongByteProgress == SizeOfSongByteProgress then
                     SongHasFinished = true
