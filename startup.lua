@@ -209,7 +209,7 @@ end
 
 
 if DoUpdates == true then
-    DownloadFromWeb("https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/startup.lua","CCMusic.lua")
+    DownloadFromWeb("https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/startup.lua",shell.getRunningProgram())
 end
 
 
