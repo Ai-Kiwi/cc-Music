@@ -50,6 +50,9 @@ end
 term.clear()
 term.setCursorPos(1,1)
 
+
+--looks that all the settings have been loaded and if they dont creates them
+
 --ListOfSettings["<NAME>"]["Value"]
 CreateNewSettings("SONG_BUFFER_SIZE","int",16,"Song buffer size","Song buffer size is a value that is used for chunks of a video to play. Due to current bugs alot of things that shouldnt rely off this internally. Higher seems to play video better but smaller causes more proleams but makes things look nicer due to stupid bugs i havnt got around to patching yet.")
 CreateNewSettings("SHUFFLE_VIDEO","boolean",true,"shuffle video","this apon will make it so apon video finish it will start playing another video in the playlist.")
