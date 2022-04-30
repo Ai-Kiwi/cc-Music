@@ -43,3 +43,4 @@ wget run https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/install.lua
  - fix up support for custem install locastions
  - improve progress bar and other things by using custem chactors
  - find out why popup glitchs on craftos-pc
+ - dev branch
