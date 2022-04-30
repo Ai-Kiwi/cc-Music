@@ -8,7 +8,7 @@ wget get https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/startup.lua sta
 ```  
 # how to use  
   
-**in order to upload a song.**  
+**In order to upload a song.**  
  1 : download song from youtube or whatever  
  2 : convert to format using music.madefor.cc  
  3 : upload to a website like 10 minute hosting  
