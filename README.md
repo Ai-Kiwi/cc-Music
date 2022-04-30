@@ -41,3 +41,4 @@ wget get https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/startup.lua sta
  - auto start playing songs on program boot
  - auto updating smartly updating the right file
  - fix up support for custem install locastions
+ - improve progress bar and other things by using custem chactors
