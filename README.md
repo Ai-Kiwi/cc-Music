@@ -35,8 +35,9 @@ wget get https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/startup.lua sta
  - fix exit settings crash
  - make there be a settings for playlists settings size
  - auto start playing playlist on server restart
- - drag n drop
+ - drag n drop support
  - fix song player breaking apon switching song
  - search
  - auto start playing songs on program boot
  - auto updating smartly updating the right file
+ - fix up support for custem install locastions
