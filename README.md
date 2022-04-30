@@ -15,7 +15,7 @@ wget get https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/startup.lua sta
  4 : in app add a song using that url  
     
 # maybe coming soon
- - better gui
+ - better gui (especially for settings)
  - support for moniters (mode for playlist and mode for just video playing)
  - queue
  - suport for alot of speakers
@@ -36,7 +36,7 @@ wget get https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/startup.lua sta
  - make there be a settings for playlists settings size
  - auto start playing playlist on server restart
  - drag n drop
- - fix song breaking apon switching audio
+ - fix song player breaking apon switching song
  - search
  - auto start playing songs on program boot
  - auto updating smartly updating the right file
