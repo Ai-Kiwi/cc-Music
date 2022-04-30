@@ -4,7 +4,7 @@ A simple music player gui for cc tweaked!
 # install
   
 ```
-wget run https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/startup.lua
+wget get https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/startup.lua startup.lua
 ```  
 # how to use  
   
