@@ -54,4 +54,5 @@ wget run https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/install.lua
  - add doubble buffering to input popup
 
 # contributing
-if you would like to make any changes please feel free to help out! (make sure to only upload to dev branch)
+if you would like to make any changes please feel free to help out! (however make sure to only upload to dev branch)
+
