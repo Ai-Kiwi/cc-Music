@@ -50,3 +50,4 @@ wget run https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/install.lua
  - make so same song in 2 playlists doesnt take up doubble space
  - support for song store
  - download bulk
+ - add padding for text
