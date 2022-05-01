@@ -51,3 +51,4 @@ wget run https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/install.lua
  - support for song store
  - download bulk
  - add padding for text
+ - add doubble buffering to input popup
