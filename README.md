@@ -1,5 +1,8 @@
 # cc-Music
 A straightforward music player interface for cc-tweaked!
+![image](https://user-images.githubusercontent.com/66819523/166130505-92a65608-0f24-42b0-8a18-f06a8e3ada70.png)
+
+
 
 # install
   
