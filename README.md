@@ -47,3 +47,6 @@ wget run https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/install.lua
  - improve progress bar and other things by using custem chactors
  - find out why popup glitchs on craftos-pc
  - dev branch
+ - make so same song in 2 playlists doesnt take up doubble space
+ - support for song store
+ - download bulk
