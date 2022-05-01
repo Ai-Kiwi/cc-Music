@@ -1,13 +1,22 @@
+--cleanup screen
+term.setBackgroundColor(colors.black)
+term.setTextColor(colors.white)
+term.setCursorPos(1,1)
+term.clear()
+
+--defining values
 verson = "1.2.2"
-MoniterX, MoniterY = term.getSize()
-DoUpdates = true
+DoUpdates = false
+local WindowObject = nil
+local MonitorData = {}
+MonitorData.X, MonitorData.Y = term.getSize()
 
 
---all the stuff for 
+--setting values
+local ListOfSettings = {}
+local VALUES_LOADED_IN = {}
 
-ListOfSettings = {}
-VALUES_LOADED_IN = {}
-
+--load values from file
 local file = fs.open("CCMUSIC.config","r")
 if file then
     VALUES_LOADED_IN = file.readAll()
@@ -16,6 +25,7 @@ if file then
 
 end
 
+--function to save the settings values to file
 local function SaveSettings()
     local file = fs.open("CCMUSIC.config","w")
     local NewListOfSettings = {}
@@ -33,25 +43,24 @@ local function SaveSettings()
     NewListOfSettings = nil
 end
 
+--make sure a settings exists incase it failed to load or settings are missing
 local function CreateNewSettings(ValueName,ValueType,DEFAULT_VALUE,DisplayText,InfoText)
+    --creates template of what the value should be
     ListOfSettings[ValueName] = {}
     ListOfSettings[ValueName]["Type"] = ValueType
     ListOfSettings[ValueName]["Value"] = DEFAULT_VALUE
     ListOfSettings[ValueName]["DisplayText"] = DisplayText
     ListOfSettings[ValueName]["InfoText"] = InfoText
 
-
+    --if value doesnt exist then use template
     if VALUES_LOADED_IN[ValueName] == nil then
     else
         ListOfSettings[ValueName]["Value"] = VALUES_LOADED_IN[ValueName]["Value"]
     end
 end
 
-term.clear()
-term.setCursorPos(1,1)
 
-
---looks that all the settings have been loaded and if they dont creates them
+--looks that all the settings have been loaded and if they don't creates them
 
 --ListOfSettings["<NAME>"]["Value"]
 CreateNewSettings("SONG_BUFFER_SIZE","int",16,"Song buffer size","Song buffer size is a value that is used for chunks of a video to play. Due to current bugs alot of things that shouldnt rely off this internally. Higher seems to play video better but smaller causes more proleams but makes things look nicer due to stupid bugs i havnt got around to patching yet.")
@@ -62,102 +71,114 @@ CreateNewSettings("DOUBLE_BUFFERING","boolean",true,"double buffering","double b
 CreateNewSettings("VOLUME","range-0-100",100,"volume","this is the volume of the music")
 --CreateNewSettings("SOUND_EFFECTS","boolean",true,"sound effects","this will enable or disable sound effects")
 
+SaveSettings()
 
-
-
-
-
-
---finally start the code
-
+--converts seconds to hours, minutes, seconds
 local function SecandsToTime(Secands,FormatMode)
+    --define values
     local OutputSecands = Secands
     local OutputMinutes = 0
     local OutputHours = 0
+    local OutPutString = ""
 
-    while OutputSecands >= 60 do
-        OutputSecands = OutputSecands - 60
-        OutputMinutes = OutputMinutes + 1
+    --calculates the time values
+    local function CalculateTimeValue(InputTime)
+        --define values
+        local OutputValue = 0
+        local NewInputTime = InputTime
+
+        --calculates the values
+        while NewInputTime >= 60 do
+            NewInputTime = NewInputTime - 60
+            OutputValue = OutputValue + 1
+        end
+        return OutputValue, NewInputTime
     end
 
-    while OutputMinutes >= 60 do
-        OutputMinutes = OutputMinutes - 60
-        OutputHours = OutputHours + 1
-    end
+    OutputMinutes, OutputSecands = CalculateTimeValue(OutputSecands)
+    OutputHours, OutputMinutes = CalculateTimeValue(OutputMinutes)
 
-    OutPutString = ""
 
+    --format the output to a string
     if FormatMode then
-        if OutputHours > 0 then
-            OutPutString = OutPutString .. OutputHours .. ":"
-        end
+        --converts it to a mode like this : 5:26:15
 
-        if OutputMinutes > 0 then
-            OutPutString = OutPutString .. OutputMinutes .. ":"
+        --function to add number to string
+        local function AddValue(Value)
+            if Value > 0 then
+                if OutPutString == "" then
+                else
+                    OutPutString = OutPutString..":"
+                end
+                OutPutString = OutPutString .. Value
+            end
         end
+        
+        AddValue(OutputHours)
+        AddValue(OutputMinutes)
+        AddValue(OutputSecands)
 
-        if OutputSecands > 0 then
-            OutPutString = OutPutString .. OutputSecands
-        end
     else
-        if OutputHours > 0 then
-            OutPutString = OutPutString..OutputHours.."h"
+        --converts it to a mode like this : 5h 26m 15s
+
+        --function to add number to string
+        local function AddValue(Value,Text)
+            if Value > 0 then
+                if OutPutString ~= "" then
+                    OutPutString = OutPutString.." "
+                end
+                OutPutString = OutPutString..Value..Text
+            end
         end
 
-        if OutputMinutes > 0 then
-            if OutPutString ~= "" then
-                OutPutString = OutPutString.." "
-            end
-            OutPutString = OutPutString..OutputMinutes.."m"
-        end
+        AddValue(OutputHours,"h")
+        AddValue(OutputMinutes,"m")
+        AddValue(OutputSecands,"s")
 
-        if OutputSecands > 0 then
-            if OutPutString ~= "" then
-                OutPutString = OutPutString.." "
-            end
-            OutPutString = OutPutString..OutputSecands.."s"
-        end
     end
 
     return OutPutString
 end
 
 
-local WindowObject = nil
-
-local function DownloadFromWeb(URL,FilePath,DontBufferBreakURL,UseBin)
-    --draw text that is start looking for updates
-    local Text = "idk what im doing"
+local function DownloadFromWeb(URL,FilePath,DontUseBufferBreaker,UseBin)
+    --get funny message for user
+    local FunnyText = "error 404 message not found"
     FunnyTextSite = http.get("https://gist.githubusercontent.com/meain/6440b706a97d2dd71574769517e7ed32/raw/4d5b4156027ac1605983dacaa78cf41bbd75be71/loading_messages.js")
     for i = 1, math.random(1,245) do FunnyTextSite.readLine() end
-    Text = FunnyTextSite.readLine()
+    FunnyText = FunnyTextSite.readLine()
     FunnyTextSite.close()
 
-    
-    local LoopNumber = 0
-    local TextSize = #Text
 
-    while TextSize > MoniterX do
-        if TextSize > MoniterX then
-            TextSize = TextSize - MoniterX
+    --define values for printing text
+    local LoopNumber = 1
+    local TextSize = #FunnyText
+
+    --gets how many lines the text will be on
+    while TextSize > MonitorData.X do
+        if TextSize > MonitorData.X then
+            TextSize = TextSize - MonitorData.X
             LoopNumber = LoopNumber + 1
         end
     end
-    LoopNumber = LoopNumber + 1
+
+    --prints the funny text
     term.clear()
     term.setTextColor(colors.white)
     term.setBackgroundColor(colors.black)
 
+    --runs through all the rows and prints the text
     for i=1, LoopNumber do
         local XPOS = 1
         if LoopNumber == i then
-            XPOS = math.floor(MoniterX / 2) - math.floor(TextSize / 2)
+            XPOS = math.floor(MonitorData.X / 2) - math.floor(TextSize / 2)
         end
 
-        term.setCursorPos(XPOS,(MoniterY / 2) - math.floor(LoopNumber / 2) + i)
-        term.write(Text:sub((i * MoniterX) - MoniterX,i * MoniterX))
+        term.setCursorPos(XPOS,(MonitorData.Y / 2) - math.floor(LoopNumber / 2) + i)
+        term.write(FunnyText:sub((i * MonitorData.X) - MonitorData.X,i * MonitorData.X))
     end
 
+    --updates the doubble buffering frame
     if WindowObject then
         WindowObject.setVisible(true)
         WindowObject.redraw()
@@ -165,42 +186,32 @@ local function DownloadFromWeb(URL,FilePath,DontBufferBreakURL,UseBin)
     end
 
     
-    --term.setCursorPos(math.floor((MoniterX / 2)) - math.floor(TextSize / 2),math.floor(MoniterY / 2) - math.floor(LoopNumber / 2))
---
-    --term.write(string.sub(Text,0,MoniterX))
-    --if LoopNumber > 0 then
-    --    term.setCursorPos(1,math.floor(MoniterY / 2))
-    --    term.write(string.sub(Text,MoniterX + 1,TextSize))
-    --end
-
-    
-    
+    --define values needed for downloading
     local update = nil
+
     --download update
-    if DontBufferBreakURL then
+    if DontUseBufferBreaker then
         update = http.get(URL,nil,UseBin)
     else
         update = http.get(URL .. "?cb=" .. os.epoch(),nil,UseBin)
     end
+
+    --check if the download was successful
     if update then
         --preform updating 
-        fs.delete(FilePath..".new")
         local updateFile = nil
         if UseBin then
-            updateFile = fs.open(FilePath .. ".new", "wb")
+            updateFile = fs.open(FilePath, "wb")
         else
-            updateFile = fs.open(FilePath .. ".new", "w")
+            updateFile = fs.open(FilePath, "w")
         end
         updateFile.write(update.readAll())
         updateFile.close()
         update.close()
-        fs.delete(FilePath)
-        shell.run("rename " .. FilePath .. ".new " .. FilePath)
-        fs.delete(FilePath .. ".old")
     else
         --draws screen saying failed to contact server
         term.clear()
-        term.setCursorPos(math.floor((MoniterX / 2)) - 9,math.floor(MoniterY / 2))
+        term.setCursorPos(math.floor((MonitorData.X / 2)) - 9,math.floor(MonitorData.Y / 2))
         term.setTextColor(colors.white)
         term.setBackgroundColor(colors.black)
         term.write("Failed to contact servers")
@@ -209,22 +220,22 @@ local function DownloadFromWeb(URL,FilePath,DontBufferBreakURL,UseBin)
 
 end
 
-
-
+--if the program isn't set to not update then update the program
 if DoUpdates == true then
     DownloadFromWeb("https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/startup.lua",shell.getRunningProgram())
 end
 
-
-
+--sets up doubble buffering if it is enabled
 if ListOfSettings["DOUBLE_BUFFERING"]["Value"] == true then
-    WindowObject = window.create(term.current(), 1, 1, MoniterX, MoniterY)
+    WindowObject = window.create(term.current(), 1, 1, MonitorData.X, MonitorData.Y)
     WindowObject.setVisible(false)
     term.redirect(WindowObject)
 
-    PromptWindowObject = window.create(term.current(), 1, 1, MoniterX, MoniterY)
+    PromptWindowObject = window.create(term.current(), 1, 1, MonitorData.X, MonitorData.Y)
     PromptWindowObject.setVisible(false)
 end
+
+--defines values needed for the program that should be moved over to settings soon
 local PlayListMenuSize = 10
 local SongsPlaylists = {}
 
@@ -233,16 +244,18 @@ local SongsPlaylists = {}
 term.clear()
 term.setBackgroundColor(colors.gray)
 term.setTextColor(colors.white)
-term.setCursorPos((math.floor(MoniterX / 2)) - 4,math.floor((MoniterY / 2) - 1))
+term.setCursorPos((math.floor(MonitorData.X / 2)) - 4,math.floor((MonitorData.Y / 2) - 1))
 term.write("computer")
-term.setCursorPos((math.floor(MoniterX / 2)) - 2,math.floor((MoniterY / 2) + 1))
+term.setCursorPos((math.floor(MonitorData.X / 2)) - 2,math.floor((MonitorData.Y / 2) + 1))
 term.write("disk")
 
-local DriveToBootOff = ""
 
 
 
---scan through drive asking if to use disk
+
+--defult location for the music
+local DriveToBootOff = fs.getDir(shell.getRunningProgram())
+--scan through drive asking if to use disk     TODO:     THIS NEEDS TO BE UPDATED!!! LOOKS LIKE CRAP!
 local DiskDrive = peripheral.find("drive")
 if DiskDrive then
     if DiskDrive.isDiskPresent() then
@@ -250,10 +263,9 @@ if DiskDrive then
         while true do
             local event, button, x, y = os.pullEvent("mouse_click")
             --look if its the computer
-            if y == (math.floor((MoniterY / 2) - 1)) then
-                DriveToBootOff = ""
+            if y == (math.floor((MonitorData.Y / 2) - 1)) then
                 break
-            elseif y == (math.floor((MoniterY / 2) + 1)) then
+            elseif y == (math.floor((MonitorData.Y / 2) + 1)) then
                 DriveToBootOff = "disk/"
                 break
             end
@@ -261,9 +273,8 @@ if DiskDrive then
     end
 end
 
---bind all perphials
-local dfpwm = require("cc.audio.dfpwm")
-local speaker = peripheral.find("speaker")
+
+
 
 
 
@@ -273,7 +284,7 @@ if fs.isDir(DriveToBootOff .. "songs/playlists/") == false then
     fs.makeDir(DriveToBootOff .. "songs/playlists/")
 end
 
---create all varablies
+--create all varablies --TODO: Clean up how many values there are
 local NumberOfPlayListsOnSystem = 0
 local PlayerHasScrolledOnPlaylistMenu = 0
 local SongSelectionScroll = 0
@@ -290,39 +301,42 @@ local SizeOfSong = 0
 
 --text cut off function
 local function TextCutOff(Text,CutOff)
-    NewText = ""
-    for i=1,#Text do
-        if i <= CutOff then
-            NewText = NewText .. Text:sub(i,i)
-        else
-            break
-        end
-    end
-    return NewText
+    -- NewText = ""
+    -- for i=1,#Text do
+    --     if i <= CutOff then
+    --         NewText = NewText .. Text:sub(i,i)
+    --     else
+    --         break
+    --     end
+    -- end
+    -- return NewText
+    return Text:sub(1,CutOff)
 end
 
 --this function will shuffle to a random song 
 local function PlayRandomSongInPlayList()
+    --gets songs in playlist
     local ShuffledSongs = {}
     local SongsInPlaylist = fs.list(DriveToBootOff .. "songs/playlists/" .. CorrentSongBeingPlayedPlaylist)
-    
 
+    --selects song to play at random
     CorrentSongBeingPlayed = SongsInPlaylist[math.random(1,#SongsInPlaylist)]
     CorrentSongPercent = 0
     SongByteProgress = 0
 
-
-
-
 end
 
+--User pop up menu - TODO: fix glitching with craftos-pc
 local function preformPopUp(Message)
+    --defines values needed for the pop up
     UserInput = ""
     
-    
+    --keeps looping until the user presses enter
     while true do
+        --gets the user input
         local event, character = os.pullEvent()
 
+        --handles the user input
         if event == "paste" then
             UserInput = UserInput .. character
         elseif character == keys.enter and event == "key" then
@@ -333,10 +347,11 @@ local function preformPopUp(Message)
             UserInput = UserInput .. character
         end
 
+        --gets size of text user inputed
         SizeOfTextBox = #UserInput
         
         
-
+        --looks if doubble buffering is enabled
         if WindowObject == nil then
             term.setBackgroundColor(colors.gray)
             term.clear()
@@ -350,22 +365,24 @@ local function preformPopUp(Message)
             term.redirect(term.native())
         end
 
+        --if the user text typed in is less the the size of the message then draw the message
         if SizeOfTextBox < #Message then
             SizeOfTextBox = #Message
         end
 
         
         --draw text box for user input
-        paintutils.drawFilledBox((MoniterX / 2) - ((SizeOfTextBox / 2) + 1) + 1 ,(MoniterY / 2) + 3,(MoniterX / 2) + (((SizeOfTextBox + 1) / 2)) + 1 ,(MoniterY / 2),colors.black,colors.white)
-        paintutils.drawLine((MoniterX / 2) - ((SizeOfTextBox / 2) + 0) + 1 ,(MoniterY / 2) + 2,(MoniterX / 2) + (((SizeOfTextBox + 1) / 2) - 1) + 1 ,(MoniterY / 2) + 2,colors.gray)
-        term.setCursorPos((MoniterX / 2) - ((SizeOfTextBox / 2) + 0) + 1 ,(MoniterY / 2) + 2)
+        paintutils.drawFilledBox((MonitorData.X / 2) - ((SizeOfTextBox / 2) + 1) + 1 ,(MonitorData.Y / 2) + 3,(MonitorData.X / 2) + (((SizeOfTextBox + 1) / 2)) + 1 ,(MonitorData.Y / 2),colors.black,colors.white)
+        paintutils.drawLine((MonitorData.X / 2) - ((SizeOfTextBox / 2) + 0) + 1 ,(MonitorData.Y / 2) + 2,(MonitorData.X / 2) + (((SizeOfTextBox + 1) / 2) - 1) + 1 ,(MonitorData.Y / 2) + 2,colors.gray)
+        term.setCursorPos((MonitorData.X / 2) - ((SizeOfTextBox / 2) + 0) + 1 ,(MonitorData.Y / 2) + 2)
         term.write(UserInput)
         --draw info
         term.setTextColor(colors.white)
         term.setBackgroundColor(colors.black)
-        term.setCursorPos((MoniterX / 2) - ((SizeOfTextBox / 2) + 0) + 1 ,(MoniterY / 2) + 1)
+        term.setCursorPos((MonitorData.X / 2) - ((SizeOfTextBox / 2) + 0) + 1 ,(MonitorData.Y / 2) + 1)
         term.write(Message)
 
+        --reddicrect to the normal window
         if WindowObject then
             term.redirect(WindowObject)
         end
@@ -374,20 +391,15 @@ local function preformPopUp(Message)
 
 end
 
+--clears the line you pick
 local function ClearLine(ColorPicked,Line)
     term.setCursorPos(1,Line)
     term.setBackgroundColor(ColorPicked)
     term.clearLine()
 end
 
+--draws the settings menu
 local function SettingsMenu()
-    
-
-
-
-    
-
-
 
 
     while true do
@@ -396,6 +408,7 @@ local function SettingsMenu()
         term.setBackgroundColor(colors.gray)
         term.clear()
 
+        --draws each setting
         local BindingForSettings = {}
         local Value = 0
         for k,v in pairs(ListOfSettings) do
@@ -406,28 +419,31 @@ local function SettingsMenu()
     
     
         end
-        term.setCursorPos(MoniterX,1)
+        --draws close button
+        term.setCursorPos(MonitorData.X,1)
         term.setTextColor(colors.white)
         term.setBackgroundColor(colors.red)
         term.write("X")
 
+        --double buffering
         if WindowObject then
             WindowObject.setVisible(true)
             WindowObject.redraw()
             WindowObject.setVisible(false)
         end
         
+        --handle user input
         local EventOutput = {os.pullEvent()}
         if EventOutput[1] == "mouse_click" then
             local X,Y = EventOutput[3],EventOutput[4]
-            if X == MoniterX and Y == 1 then
+            if X == MonitorData.X and Y == 1 then
                 term.redirect(WindowObject)
                 return
 
             else
 
                 ValueBeingChanged = BindingForSettings[Y]
-
+                --TODO: clean up this code
                 --if they click on a value then change it
                 if ListOfSettings[ValueBeingChanged] then            
                     if ListOfSettings[ValueBeingChanged].Type == "boolean" then
@@ -442,6 +458,8 @@ local function SettingsMenu()
                         ListOfSettings[ValueBeingChanged].Value = preformPopUp("New value for " .. ListOfSettings[ValueBeingChanged].DisplayText .. "?")
                     elseif ListOfSettings[ValueBeingChanged].Type == "int" then
                         ListOfSettings[ValueBeingChanged].Value = math.floor(tonumber(preformPopUp("New value for " .. ListOfSettings[ValueBeingChanged].DisplayText .. "?")))
+
+                        --TODO: fix range system
                     elseif ListOfSettings[ValueBeingChanged].Type == "range-0-100" then
 
                         if ListOfSettings[ValueBeingChanged].Value >= 100 then
@@ -466,16 +484,17 @@ local function SettingsMenu()
 
 end
 
+--TODO: clean up this whole function
+--draws the corrent song playing
 local function RenderSongPlayingGUI()
 
-    --clears the lines so that text can be drawn in a clearn area
-    ClearLine(colors.black ,MoniterY)
-    ClearLine(colors.black ,MoniterY - 1)
+    --clears the lines so that text can be drawn in a certain area
+    ClearLine(colors.black ,MonitorData.Y)
+    ClearLine(colors.black ,MonitorData.Y - 1)
 
-    --caulate progress bar letters
-    ProgressBarLettersCanBeFilled = MoniterX - 2
+    --caulate progress bar data
+    ProgressBarLettersCanBeFilled = MonitorData.X - 2
     ProgressBarLettersFilled = ProgressBarLettersCanBeFilled * CorrentSongPercent
-
     local TextToWrite = SecandsToTime(math.floor((SizeOfSong / 6000) * (SongByteProgress / SizeOfSongByteProgress)))
     local TimeLeft = SecandsToTime(math.floor((SizeOfSong / 6000) * ((SizeOfSongByteProgress - SongByteProgress) / SizeOfSongByteProgress)))
     local SizeOfText = #TextToWrite + #TimeLeft
@@ -483,10 +502,10 @@ local function RenderSongPlayingGUI()
         TextToWrite = TextToWrite.." "
     end
     TextToWrite = TextToWrite..TimeLeft
-    --loops through every letter and draws a letter
+
+    --loops through every letter and draws a letter in the progress bar
     for i=1,ProgressBarLettersCanBeFilled do
-        --set cursor pos (come to think of it this whole thing should be redone with term.blit)
-        term.setCursorPos(i + 1,MoniterY)
+        term.setCursorPos(i + 1,MonitorData.Y)
         if ProgressBarLettersFilled > i then
             if SongIsPlaying then
                 term.setBackgroundColor(colors.orange)
@@ -506,7 +525,7 @@ local function RenderSongPlayingGUI()
     end
 
     --draw song name
-    term.setCursorPos(2,MoniterY - 1)
+    term.setCursorPos(2,MonitorData.Y - 1)
     term.setBackgroundColor(colors.black)
     term.setTextColor(colors.white)
     term.write(CorrentSongBeingPlayed)
@@ -514,7 +533,7 @@ local function RenderSongPlayingGUI()
     term.write(" - " .. SecandsToTime(math.floor(SizeOfSong / 6000)))
     
     --draw stop butten
-    term.setCursorPos(MoniterX - 1,MoniterY - 1)
+    term.setCursorPos(MonitorData.X - 1,MonitorData.Y - 1)
     term.setBackgroundColor(colors.red)
     term.setTextColor(colors.white)
     term.write("x")
@@ -522,16 +541,18 @@ local function RenderSongPlayingGUI()
 
 end
 
+
 local function DrawPlaylistGui()
 
     --draw a sidetext of the playlists
-    paintutils.drawFilledBox(1,1,PlayListMenuSize,MoniterY,colors.black)
+    paintutils.drawFilledBox(1,1,PlayListMenuSize,MonitorData.Y,colors.black)
     term.setTextColor(colors.white)
     term.setBackgroundColor(colors.black)
 
     --draw list of playlists
     NumberOfPlayListsOnSystem = 0
     SongsPlaylists = fs.list(DriveToBootOff .. "songs/playlists/")
+
     --loop though every item in the playlist
     for i=1,#SongsPlaylists do
         --draw the delete butten
@@ -552,9 +573,6 @@ local function DrawPlaylistGui()
         NumberOfPlayListsOnSystem = NumberOfPlayListsOnSystem + 1
     end
 
-    
-
-
 
     --draw add new butten
     term.setCursorPos(math.floor(PlayListMenuSize / 2),3 + NumberOfPlayListsOnSystem + PlayerHasScrolledOnPlaylistMenu)
@@ -569,19 +587,20 @@ local function DrawPlaylistGui()
     term.write(TextCutOff("Playlists",PlayListMenuSize))
 
     --draw verson text
-    term.setCursorPos(1,MoniterY - 1)
+    term.setCursorPos(1,MonitorData.Y - 1)
     term.setTextColor(colors.green)
     term.setBackgroundColor(colors.black)
     term.write(TextCutOff("v" .. verson,PlayListMenuSize))
 
-    --draw verson text
-    term.setCursorPos(1,MoniterY)
+    --draw settings text
+    term.setCursorPos(1,MonitorData.Y)
     term.setTextColor(colors.white)
     term.setBackgroundColor(colors.black)
     term.write(TextCutOff("settings",PlayListMenuSize))
 
 end
 
+--draws menu for what song to play
 local function DrawSongSelectionMenu()
 
     --print the title
@@ -623,29 +642,15 @@ local function DrawSongSelectionMenu()
         NumberOfSongsInPlaylist = NumberOfSongsInPlaylist + 1
     end
 
-
-
-
     --draw add new butten
-    term.setCursorPos(math.floor((MoniterX - PlayListMenuSize) / 2) + PlayListMenuSize,6 + NumberOfSongsInPlaylist + SongSelectionScroll)
+    term.setCursorPos(math.floor((MonitorData.X - PlayListMenuSize) / 2) + PlayListMenuSize,6 + NumberOfSongsInPlaylist + SongSelectionScroll)
     term.setBackgroundColor(colors.gray)
     term.setTextColor(colors.green)
     term.write("+")
 
-    --ya know im looking back through my code and i have no idea why this is here
-    -- --draw playlist text
-    -- term.setCursorPos(1,1)
-    -- term.setTextColor(colors.white)
-    -- term.setBackgroundColor(colors.black)
-    -- term.write(TextCutOff("Playlists",PlayListMenuSize))
-
-
-
-
 end
 
-local decoder = dfpwm.make_decoder()
-
+--function that draws song render
 local function PreformSongRender()
     if PlaylistPlayerHasOpen then
         DrawSongSelectionMenu()
@@ -662,25 +667,26 @@ end
 
 
 
-local buffer = ""
 
+--TODO: make code less janky
 local function PlaySong()
+    --define values needed
+    local buffer = ""
+    local dfpwm = require("cc.audio.dfpwm")
+    local speaker = peripheral.find("speaker")
+
+    local decoder = dfpwm.make_decoder()
+    
 
     while true do
-
+        --if a song if being played
         if CorrentSongBeingPlayed then
-            local dfpwm = require("cc.audio.dfpwm")
-            local speaker = peripheral.find("speaker")
-
-            local decoder = dfpwm.make_decoder()
+            --setup for song playing
             SongHasFinished = false
-
             SizeOfSongByteProgress = 0
             for chunk in io.lines("songs/playlists/" .. CorrentSongBeingPlayedPlaylist .. "/" .. CorrentSongBeingPlayed, ListOfSettings["SONG_BUFFER_SIZE"]["Value"] * 1024) do
                 SizeOfSongByteProgress = SizeOfSongByteProgress + 1
-
             end
-            
             SongByteProgress = 0
             local SongStartedWith = CorrentSongBeingPlayed
             SizeOfSong = fs.getSize("songs/playlists/" .. CorrentSongBeingPlayedPlaylist .. "/" .. CorrentSongBeingPlayed)
@@ -689,19 +695,22 @@ local function PlaySong()
             --look ive been coding for to long and honestly i dont really wanna write how this works
             --maybe one day i will along with the rest of this code
             for chunk in io.lines("songs/playlists/" .. CorrentSongBeingPlayedPlaylist .. "/" .. CorrentSongBeingPlayed, ListOfSettings["SONG_BUFFER_SIZE"]["Value"] * 1024) do
+                --looks if its skipping this part of the song becuase its resumming from pause
                 if JumpBackToLastPauseSpot == false or PauseSpotToJumpTo == SongByteProgress then
+                    --says it has finish unpasuing
                     JumpBackToLastPauseSpot = false
                     if CorrentSongBeingPlayed then
                         buffer = decoder(chunk)
-
                         
-                        
+                        --wait until next part of song can be played
                         while not speaker.playAudio(buffer,ListOfSettings["VOLUME"]["Value"] / 100 ) do
                             os.sleep(0.1)
                         end
+                        --stops song is pause is pressed
                         if CorrentSongBeingPlayed ~= SongStartedWith then
                             speaker.stop()
                         end
+                        --if song is paused then wait until it is unpaused
                         if SongIsPlaying == false then
                             speaker.stop()
                             while SongIsPlaying == false do
@@ -713,16 +722,15 @@ local function PlaySong()
                         end
 
                     else
-
+                        --handles unpausing
                         speaker.stop()
                         break
                     end
                 end
-
+                --skips if its paused
                 if CorrentSongBeingPlayed == nil then
                     break
                 end
-
                 SongByteProgress = SongByteProgress + 1
                 if SongByteProgress == SizeOfSongByteProgress then
                     SongHasFinished = true
@@ -747,6 +755,7 @@ local function PlaySong()
     end
 end
 
+--handles the event handler
 local function EventHandler()
     local EventName, EventParam1, EventParam2, EventParam3 = os.pullEvent()
     -- event, button, x, y
@@ -757,9 +766,9 @@ local function EventHandler()
         local MouseClickY = EventParam3
 
         --looks if they are clicking on the corrent song playing
-        if MouseClickY > (MoniterY - 2) and CorrentSongBeingPlayed then
+        if MouseClickY > (MonitorData.Y - 2) and CorrentSongBeingPlayed then
             --they are clicking on progress bar
-            if MouseClickY == MoniterY then
+            if MouseClickY == MonitorData.Y then
                 SongIsPlaying = not SongIsPlaying
                 if SongIsPlaying == false then
                     speaker.stop()
@@ -767,14 +776,14 @@ local function EventHandler()
                 end
             end
             --player is clicking on the close butten
-            if MouseClickY == (MoniterY - 1) and MouseClickX == (MoniterX - 1)  then
+            if MouseClickY == (MonitorData.Y - 1) and MouseClickX == (MonitorData.X - 1)  then
                 CorrentSongBeingPlayed = nil
                 speaker.stop()
             end
 
         --looks if they are clicking on the the playlist menu
         elseif MouseClickX < (PlayListMenuSize + 1) then
-            if MouseClickY == MoniterY then
+            if MouseClickY == MonitorData.Y then
                 --player has clicked the settings menu
                 SettingsMenu()
 
@@ -827,12 +836,6 @@ local function EventHandler()
 
                 --download song
                 local SongFileName = DriveToBootOff .. "songs/playlists/" .. PlaylistPlayerHasOpen .. "/" .. NewSongName
-                --if SongFile then
-                --    local SongFileHandle = fs.open(SongFileName, "wb")
-                --    SongFileHandle.write(SongFile.readAll())
-                --    SongFileHandle.close()
-                --    SongFile.close()
-                --end
                 DownloadFromWeb(URL,SongFileName,true,true)
             end
         end
