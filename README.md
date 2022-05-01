@@ -1,5 +1,5 @@
 # cc-Music
-A simple music player gui for cc tweaked!
+A straightforward music player interface for cc-tweaked!
 
 # install
   
@@ -8,11 +8,11 @@ wget run https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/install.lua
 ```  
 # how to use  
   
-**In order to upload a song.**  
- 1 : download song from youtube or whatever  
- 2 : convert to format using music.madefor.cc  
- 3 : upload to a website like 10 minute hosting  
- 4 : in app add a song using that url  
+**how to download a song.**
+1: obtain a song from YouTube or another source.
+2: Use music.madefor.cc to transfer to the correct format.
+3: Post to a website such as 10 minute hosting.
+4: In the app, add a song based on that url.
     
 # maybe coming soon
  - better gui (especially for settings)
