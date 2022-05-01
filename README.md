@@ -55,3 +55,4 @@ wget run https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/install.lua
 
 # contributing
 if you would like to make any changes please feel free to help out! (however make sure to only upload to dev branch)
+
