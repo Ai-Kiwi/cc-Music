@@ -52,6 +52,7 @@ wget run https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/install.lua
  - download bulk
  - add padding for text
  - add doubble buffering to input popup
+ - add error screen when failed to find speaker instead of crashing
 
 # contributing
 if you would like to make any changes please feel free to help out! (however make sure to only upload to dev branch)
