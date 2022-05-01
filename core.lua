@@ -222,7 +222,7 @@ end
 
 --if the program isn't set to not update then update the program
 if DoUpdates == true then
-    DownloadFromWeb("https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/startup.lua",shell.getRunningProgram())
+    DownloadFromWeb("https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/core.lua",shell.getRunningProgram())
 end
 
 --sets up doubble buffering if it is enabled
