@@ -5,7 +5,7 @@ term.setCursorPos(1,1)
 term.clear()
 
 --defining values
-verson = "1.2.2"
+verson = "1.2.3"
 DoUpdates = true
 local WindowObject = nil
 local MonitorData = {}
