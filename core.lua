@@ -6,7 +6,7 @@ term.clear()
 
 --defining values
 verson = "1.2.3"
-DoUpdates = true
+DoUpdates = false
 local WindowObject = nil
 local MonitorData = {}
 MonitorData.X, MonitorData.Y = term.getSize()
