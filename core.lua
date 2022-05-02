@@ -300,6 +300,7 @@ SongPlaying.SizeOfSongByteProgress = 0
 SongPlaying.JumpBackToLastPauseSpot = false
 SongPlaying.PauseSpotToJumpTo = 0
 SongPlaying.SizeOfSong = 0
+SongPlaying.SongStopped = false
 
 
 
@@ -687,6 +688,7 @@ local function PlaySong()
         if SongPlaying.CorrentSongBeingPlayed then
             --setup for song playing
             SongHasFinished = false
+            SongPlaying.SongStopped = false
             SongPlaying.SizeOfSongByteProgress = 0
             for chunk in io.lines("songs/playlists/" .. SongPlaying.CorrentSongBeingPlayedPlaylist .. "/" .. SongPlaying.CorrentSongBeingPlayed, ListOfSettings["SONG_BUFFER_SIZE"]["Value"] * 1024) do
                 SongPlaying.SizeOfSongByteProgress = SongPlaying.SizeOfSongByteProgress + 1
@@ -733,6 +735,12 @@ local function PlaySong()
                 end
                 --skips if its paused
                 if SongPlaying.CorrentSongBeingPlayed == nil then
+
+                    break
+                end
+                --stop song
+                if SongPlaying.SongStopped then
+                    speaker.stop()
                     break
                 end
                 SongPlaying.SongByteProgress = SongPlaying.SongByteProgress + 1
@@ -746,12 +754,15 @@ local function PlaySong()
                 SongPlaying.CorrentSongPercent = 0
                 SongPlaying.SongByteProgress = 0
                 if SongHasFinished == true then
-                    if ListOfSettings["SHUFFLE_VIDEO"]["Value"] == true then
-                        PlayRandomSongInPlayList()
+                    if SongPlaying.SongStopped == false then
+                        if ListOfSettings["SHUFFLE_VIDEO"]["Value"] == true then
+                            PlayRandomSongInPlayList()
+                        end
                     end
                     SongHasFinished = false
                 end
             end
+            SongPlaying.SongStopped = false
         else
             os.sleep(0)
 
@@ -782,8 +793,8 @@ local function EventHandler()
             end
             --player is clicking on the close butten
             if MouseClickY == (MonitorData.Y - 1) and MouseClickX == (MonitorData.X - 1)  then
-                SongPlaying.CorrentSongBeingPlayed = nil
-                speaker.stop()
+                SongPlaying.SongStopped = true
+
             end
 
         --looks if they are clicking on the the playlist menu
