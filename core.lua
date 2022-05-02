@@ -10,7 +10,11 @@ DoUpdates = false
 local WindowObject = nil
 local MonitorData = {}
 MonitorData.X, MonitorData.Y = term.getSize()
-
+local SongsPlaylists = {}
+local NumberOfPlayListsOnSystem = 0
+local PlayerHasScrolledOnPlaylistMenu = 0
+local SongSelectionScroll = 0
+local NumberOfSongsInPlaylist = 0
 
 --setting values
 local ListOfSettings = {}
@@ -60,6 +64,7 @@ local function CreateNewSettings(ValueName,ValueType,DEFAULT_VALUE,DisplayText,I
 end
 
 
+
 --looks that all the settings have been loaded and if they don't creates them
 
 --ListOfSettings["<NAME>"]["Value"]
@@ -69,6 +74,8 @@ CreateNewSettings("SHUFFLE_VIDEO","boolean",true,"shuffle video","this apon will
 --CreateNewSettings("LIST_OF_SPEAKERS","LIST_OF_STRINGS",{},"list of speakers","if you have automatically find spekaers off this will let you set a list of speakers so you can play on more then one.")
 CreateNewSettings("DOUBLE_BUFFERING","boolean",true,"double buffering","double buffering is a way where only after the image has fully been drawn will you be able to see it instead of allways showing it to you")
 CreateNewSettings("VOLUME","range-0-100",100,"volume","this is the volume of the music")
+CreateNewSettings("PLAYLIST_MENU_SIZE","int",10,"playlist menu size","this is the size of the playlist menu")
+
 --CreateNewSettings("SOUND_EFFECTS","boolean",true,"sound effects","this will enable or disable sound effects")
 
 SaveSettings()
@@ -235,9 +242,7 @@ if ListOfSettings["DOUBLE_BUFFERING"]["Value"] == true then
     PromptWindowObject.setVisible(false)
 end
 
---defines values needed for the program that should be moved over to settings soon
-local PlayListMenuSize = 10
-local SongsPlaylists = {}
+
 
 
 --shows a ui saying disk or computer
@@ -285,19 +290,18 @@ if fs.isDir(DriveToBootOff .. "songs/playlists/") == false then
 end
 
 --create all varablies --TODO: Clean up how many values there are
-local NumberOfPlayListsOnSystem = 0
-local PlayerHasScrolledOnPlaylistMenu = 0
-local SongSelectionScroll = 0
-local NumberOfSongsInPlaylist = 0
-CorrentSongPercent = 0
-CorrentSongBeingPlayed = nil
-SongIsPlaying = true
-PlaylistPlayerHasOpen = nil
-SongByteProgress = 0
-SizeOfSongByteProgress = 0
-local JumpBackToLastPauseSpot = false
-local PauseSpotToJumpTo = 0
-local SizeOfSong = 0
+SongPlaying = {}
+SongPlaying.CorrentSongPercent = 0
+SongPlaying.CorrentSongBeingPlayed = nil
+SongPlaying.SongIsPlaying = true
+SongPlaying.PlaylistPlayerHasOpen = nil
+SongPlaying.SongByteProgress = 0
+SongPlaying.SizeOfSongByteProgress = 0
+SongPlaying.JumpBackToLastPauseSpot = false
+SongPlaying.PauseSpotToJumpTo = 0
+SongPlaying.SizeOfSong = 0
+
+
 
 --text cut off function
 local function TextCutOff(Text,CutOff)
@@ -317,12 +321,12 @@ end
 local function PlayRandomSongInPlayList()
     --gets songs in playlist
     local ShuffledSongs = {}
-    local SongsInPlaylist = fs.list(DriveToBootOff .. "songs/playlists/" .. CorrentSongBeingPlayedPlaylist)
+    local SongsInPlaylist = fs.list(DriveToBootOff .. "songs/playlists/" .. SongPlaying.CorrentSongBeingPlayedPlaylist)
 
     --selects song to play at random
-    CorrentSongBeingPlayed = SongsInPlaylist[math.random(1,#SongsInPlaylist)]
-    CorrentSongPercent = 0
-    SongByteProgress = 0
+    SongPlaying.CorrentSongBeingPlayed = SongsInPlaylist[math.random(1,#SongsInPlaylist)]
+    SongPlaying.CorrentSongPercent = 0
+    SongPlaying.SongByteProgress = 0
 
 end
 
@@ -494,9 +498,9 @@ local function RenderSongPlayingGUI()
 
     --caulate progress bar data
     ProgressBarLettersCanBeFilled = MonitorData.X - 2
-    ProgressBarLettersFilled = ProgressBarLettersCanBeFilled * CorrentSongPercent
-    local TextToWrite = SecandsToTime(math.floor((SizeOfSong / 6000) * (SongByteProgress / SizeOfSongByteProgress)))
-    local TimeLeft = SecandsToTime(math.floor((SizeOfSong / 6000) * ((SizeOfSongByteProgress - SongByteProgress) / SizeOfSongByteProgress)))
+    ProgressBarLettersFilled = ProgressBarLettersCanBeFilled * SongPlaying.CorrentSongPercent
+    local TextToWrite = SecandsToTime(math.floor((SongPlaying.SizeOfSong / 6000) * (SongPlaying.SongByteProgress / SongPlaying.SizeOfSongByteProgress)))
+    local TimeLeft = SecandsToTime(math.floor((SongPlaying.SizeOfSong / 6000) * ((SongPlaying.SizeOfSongByteProgress - SongPlaying.SongByteProgress) / SongPlaying.SizeOfSongByteProgress)))
     local SizeOfText = #TextToWrite + #TimeLeft
     for i=1,ProgressBarLettersCanBeFilled - SizeOfText do
         TextToWrite = TextToWrite.." "
@@ -507,7 +511,7 @@ local function RenderSongPlayingGUI()
     for i=1,ProgressBarLettersCanBeFilled do
         term.setCursorPos(i + 1,MonitorData.Y)
         if ProgressBarLettersFilled > i then
-            if SongIsPlaying then
+            if SongPlaying.SongIsPlaying then
                 term.setBackgroundColor(colors.orange)
             else
                 term.setBackgroundColor(colors.red)
@@ -528,9 +532,9 @@ local function RenderSongPlayingGUI()
     term.setCursorPos(2,MonitorData.Y - 1)
     term.setBackgroundColor(colors.black)
     term.setTextColor(colors.white)
-    term.write(CorrentSongBeingPlayed)
+    term.write(SongPlaying.CorrentSongBeingPlayed)
     term.setTextColor(colors.gray)
-    term.write(" - " .. SecandsToTime(math.floor(SizeOfSong / 6000)))
+    term.write(" - " .. SecandsToTime(math.floor(SongPlaying.SizeOfSong / 6000)))
     
     --draw stop butten
     term.setCursorPos(MonitorData.X - 1,MonitorData.Y - 1)
@@ -545,7 +549,7 @@ end
 local function DrawPlaylistGui()
 
     --draw a sidetext of the playlists
-    paintutils.drawFilledBox(1,1,PlayListMenuSize,MonitorData.Y,colors.black)
+    paintutils.drawFilledBox(1,1,ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"],MonitorData.Y,colors.black)
     term.setTextColor(colors.white)
     term.setBackgroundColor(colors.black)
 
@@ -563,19 +567,19 @@ local function DrawPlaylistGui()
 
         --draw outline and also draws text background
         term.setTextColor(colors.white)
-        if PlaylistPlayerHasOpen == SongsPlaylists[i] then
+        if SongPlaying.PlaylistPlayerHasOpen == SongsPlaylists[i] then
             term.setBackgroundColor(colors.gray)
         else
             term.setBackgroundColor(colors.black)
         end
         term.setCursorPos(2,2 + i + PlayerHasScrolledOnPlaylistMenu)
-        term.write(TextCutOff(SongsPlaylists[i] .. "                                                                                        ",PlayListMenuSize - 1))
+        term.write(TextCutOff(SongsPlaylists[i] .. "                                                                                        ",ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"] - 1))
         NumberOfPlayListsOnSystem = NumberOfPlayListsOnSystem + 1
     end
 
 
     --draw add new butten
-    term.setCursorPos(math.floor(PlayListMenuSize / 2),3 + NumberOfPlayListsOnSystem + PlayerHasScrolledOnPlaylistMenu)
+    term.setCursorPos(math.floor(ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"] / 2),3 + NumberOfPlayListsOnSystem + PlayerHasScrolledOnPlaylistMenu)
     term.setBackgroundColor(colors.black)
     term.setTextColor(colors.green)
     term.write("+")
@@ -584,19 +588,19 @@ local function DrawPlaylistGui()
     term.setCursorPos(1,1)
     term.setTextColor(colors.white)
     term.setBackgroundColor(colors.black)
-    term.write(TextCutOff("Playlists",PlayListMenuSize))
+    term.write(TextCutOff("Playlists",ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"]))
 
     --draw verson text
     term.setCursorPos(1,MonitorData.Y - 1)
     term.setTextColor(colors.green)
     term.setBackgroundColor(colors.black)
-    term.write(TextCutOff("v" .. verson,PlayListMenuSize))
+    term.write(TextCutOff("v" .. verson,ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"]))
 
     --draw settings text
     term.setCursorPos(1,MonitorData.Y)
     term.setTextColor(colors.white)
     term.setBackgroundColor(colors.black)
-    term.write(TextCutOff("settings",PlayListMenuSize))
+    term.write(TextCutOff("settings",ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"]))
 
 end
 
@@ -604,46 +608,46 @@ end
 local function DrawSongSelectionMenu()
 
     --print the title
-    term.setCursorPos(2 + PlayListMenuSize,2 + SongSelectionScroll)
+    term.setCursorPos(2 + ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"],2 + SongSelectionScroll)
     term.setBackgroundColor(colors.gray)
     term.setTextColor(colors.white)
-    local AmtOfSongs = fs.list(DriveToBootOff .. "songs/playlists/" .. PlaylistPlayerHasOpen)
-    term.write(PlaylistPlayerHasOpen .. " - " .. #AmtOfSongs .. " songs")
-    term.setCursorPos(2 + PlayListMenuSize,3 + SongSelectionScroll)
+    local AmtOfSongs = fs.list(DriveToBootOff .. "songs/playlists/" .. SongPlaying.PlaylistPlayerHasOpen)
+    term.write(SongPlaying.PlaylistPlayerHasOpen .. " - " .. #AmtOfSongs .. " songs")
+    term.setCursorPos(2 + ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"],3 + SongSelectionScroll)
     term.setTextColor(colors.lightGray)
-    local FreeSpaceInDrive = fs.getFreeSpace(DriveToBootOff .. "songs/playlists/" .. PlaylistPlayerHasOpen) 
+    local FreeSpaceInDrive = fs.getFreeSpace(DriveToBootOff .. "songs/playlists/" .. SongPlaying.PlaylistPlayerHasOpen) 
     term.write((math.floor(FreeSpaceInDrive / 10000) / 100) .. "mb of free space (" .. SecandsToTime(math.floor(FreeSpaceInDrive / 6000)) .. ")")
 
     --draw all the songs
     NumberOfSongsInPlaylist = 0
-    SongsInPlaylists = fs.list(DriveToBootOff .. "songs/playlists/" .. PlaylistPlayerHasOpen)
+    SongsInPlaylists = fs.list(DriveToBootOff .. "songs/playlists/" .. SongPlaying.PlaylistPlayerHasOpen)
     for i=1,#SongsInPlaylists do
         --draws the remove butten
-        term.setCursorPos(1 + PlayListMenuSize,5 + i + SongSelectionScroll)
+        term.setCursorPos(1 + ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"],5 + i + SongSelectionScroll)
         term.setTextColor(colors.white)
         term.setBackgroundColor(colors.red)
         term.write("x")
 
         --draws the move butten
-        term.setCursorPos(2 + PlayListMenuSize,5 + i + SongSelectionScroll)
+        term.setCursorPos(2 + ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"],5 + i + SongSelectionScroll)
         term.setTextColor(colors.white)
         term.setBackgroundColor(colors.blue)
         term.write("+")
 
         --draws the song name
         term.setTextColor(colors.white)
-        if CorrentSongBeingPlayed == SongsInPlaylists[i] then
+        if SongPlaying.CorrentSongBeingPlayed == SongsInPlaylists[i] then
             term.setBackgroundColor(colors.lightGray)
         else
             term.setBackgroundColor(colors.gray)
         end
-        term.setCursorPos(3 + PlayListMenuSize,5 + i + SongSelectionScroll)
+        term.setCursorPos(3 + ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"],5 + i + SongSelectionScroll)
         term.write(SongsInPlaylists[i] .. "                                                                                        ")
         NumberOfSongsInPlaylist = NumberOfSongsInPlaylist + 1
     end
 
     --draw add new butten
-    term.setCursorPos(math.floor((MonitorData.X - PlayListMenuSize) / 2) + PlayListMenuSize,6 + NumberOfSongsInPlaylist + SongSelectionScroll)
+    term.setCursorPos(math.floor((MonitorData.X - ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"]) / 2) + ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"],6 + NumberOfSongsInPlaylist + SongSelectionScroll)
     term.setBackgroundColor(colors.gray)
     term.setTextColor(colors.green)
     term.write("+")
@@ -652,11 +656,11 @@ end
 
 --function that draws song render
 local function PreformSongRender()
-    if PlaylistPlayerHasOpen then
+    if SongPlaying.PlaylistPlayerHasOpen then
         DrawSongSelectionMenu()
     end
     DrawPlaylistGui()
-    if CorrentSongBeingPlayed then
+    if SongPlaying.CorrentSongBeingPlayed then
         RenderSongPlayingGUI()
     end
 
@@ -680,26 +684,26 @@ local function PlaySong()
 
     while true do
         --if a song if being played
-        if CorrentSongBeingPlayed then
+        if SongPlaying.CorrentSongBeingPlayed then
             --setup for song playing
             SongHasFinished = false
-            SizeOfSongByteProgress = 0
-            for chunk in io.lines("songs/playlists/" .. CorrentSongBeingPlayedPlaylist .. "/" .. CorrentSongBeingPlayed, ListOfSettings["SONG_BUFFER_SIZE"]["Value"] * 1024) do
-                SizeOfSongByteProgress = SizeOfSongByteProgress + 1
+            SongPlaying.SizeOfSongByteProgress = 0
+            for chunk in io.lines("songs/playlists/" .. SongPlaying.CorrentSongBeingPlayedPlaylist .. "/" .. SongPlaying.CorrentSongBeingPlayed, ListOfSettings["SONG_BUFFER_SIZE"]["Value"] * 1024) do
+                SongPlaying.SizeOfSongByteProgress = SongPlaying.SizeOfSongByteProgress + 1
             end
-            SongByteProgress = 0
-            local SongStartedWith = CorrentSongBeingPlayed
-            SizeOfSong = fs.getSize("songs/playlists/" .. CorrentSongBeingPlayedPlaylist .. "/" .. CorrentSongBeingPlayed)
+            SongPlaying.SongByteProgress = 0
+            local SongStartedWith = SongPlaying.CorrentSongBeingPlayed
+            SongPlaying.SizeOfSong = fs.getSize("songs/playlists/" .. SongPlaying.CorrentSongBeingPlayedPlaylist .. "/" .. SongPlaying.CorrentSongBeingPlayed)
             
 
             --look ive been coding for to long and honestly i dont really wanna write how this works
             --maybe one day i will along with the rest of this code
-            for chunk in io.lines("songs/playlists/" .. CorrentSongBeingPlayedPlaylist .. "/" .. CorrentSongBeingPlayed, ListOfSettings["SONG_BUFFER_SIZE"]["Value"] * 1024) do
+            for chunk in io.lines("songs/playlists/" .. SongPlaying.CorrentSongBeingPlayedPlaylist .. "/" .. SongPlaying.CorrentSongBeingPlayed, ListOfSettings["SONG_BUFFER_SIZE"]["Value"] * 1024) do
                 --looks if its skipping this part of the song becuase its resumming from pause
-                if JumpBackToLastPauseSpot == false or PauseSpotToJumpTo == SongByteProgress then
+                if SongPlaying.JumpBackToLastPauseSpot == false or SongPlaying.PauseSpotToJumpTo == SongPlaying.SongByteProgress then
                     --says it has finish unpasuing
-                    JumpBackToLastPauseSpot = false
-                    if CorrentSongBeingPlayed then
+                    SongPlaying.JumpBackToLastPauseSpot = false
+                    if SongPlaying.CorrentSongBeingPlayed then
                         buffer = decoder(chunk)
                         
                         --wait until next part of song can be played
@@ -707,17 +711,17 @@ local function PlaySong()
                             os.sleep(0.1)
                         end
                         --stops song is pause is pressed
-                        if CorrentSongBeingPlayed ~= SongStartedWith then
+                        if SongPlaying.CorrentSongBeingPlayed ~= SongStartedWith then
                             speaker.stop()
                         end
                         --if song is paused then wait until it is unpaused
-                        if SongIsPlaying == false then
+                        if SongPlaying.SongIsPlaying == false then
                             speaker.stop()
-                            while SongIsPlaying == false do
+                            while SongPlaying.SongIsPlaying == false do
                                 os.sleep(0.1)
                             end
-                            JumpBackToLastPauseSpot = true
-                            PauseSpotToJumpTo = SongByteProgress - 2
+                            SongPlaying.JumpBackToLastPauseSpot = true
+                            SongPlaying.PauseSpotToJumpTo = SongPlaying.SongByteProgress - 2
                             break
                         end
 
@@ -728,19 +732,19 @@ local function PlaySong()
                     end
                 end
                 --skips if its paused
-                if CorrentSongBeingPlayed == nil then
+                if SongPlaying.CorrentSongBeingPlayed == nil then
                     break
                 end
-                SongByteProgress = SongByteProgress + 1
-                if SongByteProgress == SizeOfSongByteProgress then
+                SongPlaying.SongByteProgress = SongPlaying.SongByteProgress + 1
+                if SongPlaying.SongByteProgress == SongPlaying.SongByteProgress then
                     SongHasFinished = true
                 end
             end
-            if JumpBackToLastPauseSpot == false then
+            if SongPlaying.JumpBackToLastPauseSpot == false then
                 --clears out song because it is done
-                CorrentSongBeingPlayed = nil
-                CorrentSongPercent = 0
-                SongByteProgress = 0
+                SongPlaying.CorrentSongBeingPlayed = nil
+                SongPlaying.CorrentSongPercent = 0
+                SongPlaying.SongByteProgress = 0
                 if SongHasFinished == true then
                     if ListOfSettings["SHUFFLE_VIDEO"]["Value"] == true then
                         PlayRandomSongInPlayList()
@@ -757,6 +761,7 @@ end
 
 --handles the event handler
 local function EventHandler()
+    local speaker = peripheral.find("speaker")
     local EventName, EventParam1, EventParam2, EventParam3 = os.pullEvent()
     -- event, button, x, y
     --looks if it is the player clicking
@@ -766,23 +771,23 @@ local function EventHandler()
         local MouseClickY = EventParam3
 
         --looks if they are clicking on the corrent song playing
-        if MouseClickY > (MonitorData.Y - 2) and CorrentSongBeingPlayed then
+        if MouseClickY > (MonitorData.Y - 2) and SongPlaying.CorrentSongBeingPlayed then
             --they are clicking on progress bar
             if MouseClickY == MonitorData.Y then
-                SongIsPlaying = not SongIsPlaying
-                if SongIsPlaying == false then
+                SongPlaying.SongIsPlaying = not SongPlaying.SongIsPlaying
+                if SongPlaying.SongIsPlaying == false then
                     speaker.stop()
                     
                 end
             end
             --player is clicking on the close butten
             if MouseClickY == (MonitorData.Y - 1) and MouseClickX == (MonitorData.X - 1)  then
-                CorrentSongBeingPlayed = nil
+                SongPlaying.CorrentSongBeingPlayed = nil
                 speaker.stop()
             end
 
         --looks if they are clicking on the the playlist menu
-        elseif MouseClickX < (PlayListMenuSize + 1) then
+        elseif MouseClickX < (ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"] + 1) then
             if MouseClickY == MonitorData.Y then
                 --player has clicked the settings menu
                 SettingsMenu()
@@ -792,7 +797,7 @@ local function EventHandler()
                 if MouseClickY == (3 + NumberOfPlayListsOnSystem - PlayerHasScrolledOnPlaylistMenu) then
                     local Temp = preformPopUp("Enter the name of the playlist")
                     fs.makeDir(DriveToBootOff .. "songs/playlists/" .. Temp)
-                    PlaylistPlayerHasOpen = Temp
+                    SongPlaying.PlaylistPlayerHasOpen = Temp
                 end
                 --make sure there clicking on a playlist
                 if MouseClickY > 2 and MouseClickY < (NumberOfPlayListsOnSystem +(3 - PlayerHasScrolledOnPlaylistMenu)) then
@@ -800,10 +805,10 @@ local function EventHandler()
                     if MouseClickX == 1 then
                         if preformPopUp("type yes to confirm you would like to delete this") == "yes" then
                             fs.delete(DriveToBootOff .. "songs/playlists/" .. SongsPlaylists[MouseClickY - 2 - PlayerHasScrolledOnPlaylistMenu])
-                            PlaylistPlayerHasOpen = nil
+                            SongPlaying.PlaylistPlayerHasOpen = nil
                         end
                     else
-                        PlaylistPlayerHasOpen = SongsPlaylists[MouseClickY - 2 - PlayerHasScrolledOnPlaylistMenu]
+                        SongPlaying.PlaylistPlayerHasOpen = SongsPlaylists[MouseClickY - 2 - PlayerHasScrolledOnPlaylistMenu]
                         SongSelectionScroll = 0
                     end
 
@@ -816,18 +821,18 @@ local function EventHandler()
             --looks if they are clicking on a song
             if MouseClickY > 4 + SongSelectionScroll and MouseClickY < NumberOfSongsInPlaylist + 6 + SongSelectionScroll then
                 --look if they are clicking on the remove butten
-                if MouseClickX == (1 + PlayListMenuSize) then
+                if MouseClickX == (1 + ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"]) then
                     if preformPopUp("type yes to confirm you would like to delete this") == "yes" then
-                        fs.delete(DriveToBootOff .. "songs/playlists/" .. PlaylistPlayerHasOpen .. "/" .. SongsInPlaylists[MouseClickY - 5 - SongSelectionScroll])
-                        SongsInPlaylists = fs.list(DriveToBootOff .. "songs/playlists/" .. PlaylistPlayerHasOpen)
+                        fs.delete(DriveToBootOff .. "songs/playlists/" .. SongPlaying.PlaylistPlayerHasOpen .. "/" .. SongsInPlaylists[MouseClickY - 5 - SongSelectionScroll])
+                        SongsInPlaylists = fs.list(DriveToBootOff .. "songs/playlists/" .. SongPlaying.PlaylistPlayerHasOpen)
                         NumberOfSongsInPlaylist = NumberOfSongsInPlaylist - 1
                     end
                 else
-                    CorrentSongBeingPlayed = SongsInPlaylists[MouseClickY - 5 - SongSelectionScroll]
-                    CorrentSongBeingPlayedPlaylist = PlaylistPlayerHasOpen
-                    SongIsPlaying = true
-                    CorrentSongPercent = 0
-                    SongByteProgress = 0
+                    SongPlaying.CorrentSongBeingPlayed = SongsInPlaylists[MouseClickY - 5 - SongSelectionScroll]
+                    SongPlaying.CorrentSongBeingPlayedPlaylist = SongPlaying.PlaylistPlayerHasOpen
+                    SongPlaying.SongIsPlaying = true
+                    SongPlaying.CorrentSongPercent = 0
+                    SongPlaying.SongByteProgress = 0
                 end
                 --look if they are clicking on the addnew butten
             elseif MouseClickY == (6 + NumberOfSongsInPlaylist + SongSelectionScroll) then
@@ -835,12 +840,12 @@ local function EventHandler()
                 local NewSongName = preformPopUp("Enter the name of the song")
 
                 --download song
-                local SongFileName = DriveToBootOff .. "songs/playlists/" .. PlaylistPlayerHasOpen .. "/" .. NewSongName
+                local SongFileName = DriveToBootOff .. "songs/playlists/" .. SongPlaying.PlaylistPlayerHasOpen .. "/" .. NewSongName
                 DownloadFromWeb(URL,SongFileName,true,true)
             end
         end
     elseif EventName == "mouse_scroll" then
-        if EventParam2 < (PlayListMenuSize + 1) then
+        if EventParam2 < (ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"] + 1) then
             PlayerHasScrolledOnPlaylistMenu = PlayerHasScrolledOnPlaylistMenu + (EventParam1 * -1)
             if PlayerHasScrolledOnPlaylistMenu > 0 then
                 PlayerHasScrolledOnPlaylistMenu = 0
@@ -866,7 +871,7 @@ end
 
 local function MainSystem()
 while true do
-    CorrentSongPercent = SongByteProgress / SizeOfSongByteProgress
+    SongPlaying.CorrentSongPercent = SongPlaying.SongByteProgress / SongPlaying.SizeOfSongByteProgress
 
     term.setBackgroundColor(colors.gray)
     term.clear()
