@@ -54,6 +54,7 @@ wget run https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/install.lua
  - add doubble buffering to input popup
  - fix crash when closing song
  - fix possible bug with muaplue speakers
+ - fix pauseing song skips backwards
 
 # contributing
 if you would like to make any changes please feel free to help out! (however make sure to only upload to dev branch)
