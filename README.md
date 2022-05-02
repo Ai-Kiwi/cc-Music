@@ -55,6 +55,8 @@ wget run https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/install.lua
  - fix crash when closing song
  - fix possible bug with muaplue speakers
  - fix pauseing song skips backwards
+ - make it so that you can just pick another song and start playing while one is playing and it doesnt bug out
+ - fix EventHandler() auto finding speaker
 
 # contributing
 if you would like to make any changes please feel free to help out! (however make sure to only upload to dev branch)
