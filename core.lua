@@ -543,6 +543,12 @@ local function RenderSongPlayingGUI()
     term.setTextColor(colors.white)
     term.write("x")
 
+    --draws skip button
+    term.setCursorPos(MonitorData.X - 2,MonitorData.Y - 1)
+    term.setBackgroundColor(colors.orange)
+    term.setTextColor(colors.white)
+    term.write(">")
+
 
 end
 
@@ -795,6 +801,10 @@ local function EventHandler()
             if MouseClickY == (MonitorData.Y - 1) and MouseClickX == (MonitorData.X - 1)  then
                 SongPlaying.SongStopped = true
 
+            end
+            --player is clicking on the skip butten
+            if MouseClickY == (MonitorData.Y - 1) and MouseClickX == (MonitorData.X - 2)  then
+                SongPlaying.CorrentSongBeingPlayed = nil
             end
 
         --looks if they are clicking on the the playlist menu
