@@ -38,7 +38,6 @@ wget run https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/install.lua
  - fix exit settings crash
  - make there be a settings for playlists settings size
  - auto start playing playlist on server restart
- - drag n drop support
  - fix song player breaking apon switching song
  - search
  - auto start playing songs on program boot
@@ -55,6 +54,9 @@ wget run https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/install.lua
  - add error screen when failed to find speaker instead of crashing
  - skipping music it doesnt work with shuffle songs off
  - fix the lag after you close a song
+ - song compression
+ - api for fancy debug
+ - make program that auto removes .dfpwm files
 
 # contributing
 If you would like to make any changes, please feel free to help out! However, make sure to only upload to the development branch.

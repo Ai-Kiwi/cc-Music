@@ -355,10 +355,11 @@ local function PlayRandomSongInPlayList()
 end
 
 --User pop up menu - TODO: fix glitching with craftos-pc
-local function preformPopUp(Message)
+local function preformPopUp(Message,BackgroundSongCheek)
     --defines values needed for the pop up
     UserInput = ""
-    
+    local startingFiles = fs.list("")
+
     --keeps looping until the user presses enter
     while true do
         --gets the user input
@@ -413,6 +414,16 @@ local function preformPopUp(Message)
         --reddicrect to the normal window
         if WindowObject then
             term.redirect(WindowObject)
+        end
+
+        --look for new files
+        if BackgroundSongCheek == true then
+            local NewFiles = fs.list("")
+            for i=1,#NewFiles do
+                if startingFiles[i] ~= NewFiles[i] then
+                    return "newFile", NewFiles[i]
+                end
+            end
         end
 
     end
@@ -884,12 +895,22 @@ local function EventHandler()
                 end
                 --look if they are clicking on the addnew butten
             elseif MouseClickY == (6 + NumberOfSongsInPlaylist + SongSelectionScroll) then
-                local URL = preformPopUp("Enter the URL of the song")
-                local NewSongName = preformPopUp("Enter the name of the song")
+                local URL, NewSongFoundName = preformPopUp("Enter the URL or drag and drop",true)
+                
+                if URL == "newFile" then
+                    local NewName = NewSongFoundName
 
-                --download song
-                local SongFileName = DriveToBootOff .. "songs/playlists/" .. SongPlaying.PlaylistPlayerHasOpen .. "/" .. NewSongName
-                DownloadFromWeb(URL,SongFileName,true,true)
+                    if string.sub(NewName, #NewName -5, #NewName) == ".dfpwm" then
+                        NewName = string.sub(NewName, 1, #NewName -6)
+                    end
+
+                    fs.move(NewSongFoundName, DriveToBootOff .. "songs/playlists/" .. SongPlaying.PlaylistPlayerHasOpen .. "/" .. NewName)
+                else
+                    local NewSongName = preformPopUp("Enter the name of the song")
+                    --download song
+                    local SongFileName = DriveToBootOff .. "songs/playlists/" .. SongPlaying.PlaylistPlayerHasOpen .. "/" .. NewSongName
+                    DownloadFromWeb(URL,SongFileName,true,true)
+                end
             end
         end
     elseif EventName == "mouse_scroll" then
