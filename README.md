@@ -15,7 +15,10 @@ wget run https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/install.lua
 1: obtain a song from YouTube or another source.
 2: Use music.madefor.cc to transfer to the correct format.
 3: Post to a website such as 10 minute hosting.
-4: In the app, add a song based on that url.
+4: In the app, make an new playlist by clicking the green plus button
+5A: the click the green plus in the grey area and add the song with the url
+
+5B:simply drag and drop the DFPWM file in the grey area
     
 # maybe coming soon
  - better gui (especially for settings)
