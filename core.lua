@@ -5,8 +5,8 @@ term.setCursorPos(1,1)
 term.clear()
 
 --defining values
-verson = "1.2.3"
-DoUpdates = false
+verson = "1.3"
+local DevMode = true 
 local WindowObject = nil
 local MonitorData = {}
 MonitorData.X, MonitorData.Y = term.getSize()
@@ -15,6 +15,16 @@ local NumberOfPlayListsOnSystem = 0
 local PlayerHasScrolledOnPlaylistMenu = 0
 local SongSelectionScroll = 0
 local NumberOfSongsInPlaylist = 0
+
+--setup for dev mode
+if DevMode == true then
+    DoUpdates = false
+    verson = verson.." (DEV)"
+else
+    DoUpdates = true
+end
+
+
 
 --setting values
 local ListOfSettings = {}
