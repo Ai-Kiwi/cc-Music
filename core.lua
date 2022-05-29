@@ -327,19 +327,7 @@ SongPlaying.SongStopped = false
 
 
 
---text cut off function
-local function TextCutOff(Text,CutOff)
-    -- NewText = ""
-    -- for i=1,#Text do
-    --     if i <= CutOff then
-    --         NewText = NewText .. Text:sub(i,i)
-    --     else
-    --         break
-    --     end
-    -- end
-    -- return NewText
-    return Text:sub(1,CutOff)
-end
+
 
 --this function will shuffle to a random song 
 local function PlayRandomSongInPlayList()
@@ -354,8 +342,28 @@ local function PlayRandomSongInPlayList()
 
 end
 
+local LastScanFilesOnSystem = fs.list("")
+--look for new songs
+local function LookForNewSongDragAndDropped()
+    local NewFiles = fs.list("")
+    for i=1,#NewFiles do
+        if LastScanFilesOnSystem[i] ~= NewFiles[i] then
+            --look for songs that have been added
+
+            local NewName = NewFiles[i]
+
+            if string.sub(NewName, #NewName -5, #NewName) == ".dfpwm" then
+                NewName = string.sub(NewName, 1, #NewName -6)
+            end
+            fs.move(NewFiles[i], DriveToBootOff .. "songs/playlists/" .. SongPlaying.PlaylistPlayerHasOpen .. "/" .. NewName)
+            break
+        end
+    end
+end
+
+
 --User pop up menu - TODO: fix glitching with craftos-pc
-local function preformPopUp(Message,BackgroundSongCheek)
+local function preformPopUp(Message)
     --defines values needed for the pop up
     UserInput = ""
     local startingFiles = fs.list("")
@@ -415,19 +423,9 @@ local function preformPopUp(Message,BackgroundSongCheek)
         if WindowObject then
             term.redirect(WindowObject)
         end
-
-        --look for new files
-        if BackgroundSongCheek == true then
-            local NewFiles = fs.list("")
-            for i=1,#NewFiles do
-                if startingFiles[i] ~= NewFiles[i] then
-                    return "newFile", NewFiles[i]
-                end
-            end
-        end
-
+        LookForNewSongDragAndDropped()
     end
-
+    
 end
 
 --clears the line you pick
@@ -569,9 +567,9 @@ local function RenderSongPlayingGUI()
     term.setTextColor(colors.white)
     term.write(SongPlaying.CorrentSongBeingPlayed)
     term.setTextColor(colors.gray)
-    term.write(" - " .. SecandsToTime(math.floor(SongPlaying.SizeOfSong / 6000)))
+    term.write((" - " .. SecandsToTime(math.floor(SongPlaying.SizeOfSong / 6000))):sub(1,ProgressBarLettersCanBeFilled - #SongPlaying.CorrentSongBeingPlayed))
     
-    --draw stop butten
+    
     term.setCursorPos(MonitorData.X - 1,MonitorData.Y - 1)
     term.setBackgroundColor(colors.red)
     term.setTextColor(colors.white)
@@ -614,10 +612,9 @@ local function DrawPlaylistGui()
             term.setBackgroundColor(colors.black)
         end
         term.setCursorPos(2,2 + i + PlayerHasScrolledOnPlaylistMenu)
-        term.write(TextCutOff(SongsPlaylists[i] .. "                                                                                        ",ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"] - 1))
+        term.write((SongsPlaylists[i] .. "                                                                                        "):sub(1,ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"] - 1))
         NumberOfPlayListsOnSystem = NumberOfPlayListsOnSystem + 1
     end
-
 
     --draw add new butten
     term.setCursorPos(math.floor(ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"] / 2),3 + NumberOfPlayListsOnSystem + PlayerHasScrolledOnPlaylistMenu)
@@ -629,7 +626,7 @@ local function DrawPlaylistGui()
     term.setCursorPos(1,1)
     term.setTextColor(colors.white)
     term.setBackgroundColor(colors.black)
-    term.write(TextCutOff("Playlists",ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"]))
+    term.write(("Playlists"):sub(1,ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"]))
 
     --draw verson text
     term.setCursorPos(1,MonitorData.Y - 1)
@@ -639,13 +636,13 @@ local function DrawPlaylistGui()
         term.setTextColor(colors.blue)
     end
     term.setBackgroundColor(colors.black)
-    term.write(TextCutOff("v" .. verson,ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"]))
+    term.write(("v" .. verson):sub(1,ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"]))
 
     --draw settings text
     term.setCursorPos(1,MonitorData.Y)
     term.setTextColor(colors.white)
     term.setBackgroundColor(colors.black)
-    term.write(TextCutOff("settings",ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"]))
+    term.write(("settings"):sub(1,ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"]))
 
 end
 
@@ -895,22 +892,14 @@ local function EventHandler()
                 end
                 --look if they are clicking on the addnew butten
             elseif MouseClickY == (6 + NumberOfSongsInPlaylist + SongSelectionScroll) then
-                local URL, NewSongFoundName = preformPopUp("Enter the URL or drag and drop",true)
-                
-                if URL == "newFile" then
-                    local NewName = NewSongFoundName
-
-                    if string.sub(NewName, #NewName -5, #NewName) == ".dfpwm" then
-                        NewName = string.sub(NewName, 1, #NewName -6)
-                    end
-
-                    fs.move(NewSongFoundName, DriveToBootOff .. "songs/playlists/" .. SongPlaying.PlaylistPlayerHasOpen .. "/" .. NewName)
-                else
+                local URL = preformPopUp("Enter the URL or drag and drop")
+                if not (URL == nil) then
                     local NewSongName = preformPopUp("Enter the name of the song")
                     --download song
                     local SongFileName = DriveToBootOff .. "songs/playlists/" .. SongPlaying.PlaylistPlayerHasOpen .. "/" .. NewSongName
                     DownloadFromWeb(URL,SongFileName,true,true)
                 end
+                
             end
         end
     elseif EventName == "mouse_scroll" then
@@ -934,10 +923,6 @@ end
 
 
 
-
-
-
-
 local function MainSystem()
 while true do
     SongPlaying.CorrentSongPercent = SongPlaying.SongByteProgress / SongPlaying.SizeOfSongByteProgress
@@ -947,8 +932,6 @@ while true do
     
     PreformSongRender()
 
-
-
     term.setTextColor(colors.white)
     term.setBackgroundColor(colors.black)
 
@@ -957,7 +940,9 @@ while true do
         WindowObject.redraw()
         WindowObject.setVisible(false)
     end
+    LookForNewSongDragAndDropped()
     EventHandler()
+    
 end
 end
 
