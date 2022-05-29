@@ -458,9 +458,9 @@ local function SettingsMenu()
         end
         --draws close button
         term.setCursorPos(MonitorData.X,1)
-        term.setTextColor(colors.white)
-        term.setBackgroundColor(colors.red)
-        term.write("X")
+        term.setTextColor(colors.red)
+        term.setBackgroundColor(colors.gray)
+        term.write("x")
 
         --double buffering
         if WindowObject then
@@ -598,10 +598,10 @@ local function DrawPlaylistGui()
 
     --loop though every item in the playlist
     for i=1,#SongsPlaylists do
-        --draw the delete butten
+        --draw the delete button
         term.setCursorPos(1,2 + i + PlayerHasScrolledOnPlaylistMenu)
-        term.setTextColor(colors.white)
-        term.setBackgroundColor(colors.red)
+        term.setTextColor(colors.red)
+        term.setBackgroundColor(colors.black)
         term.write("x")
 
         --draw outline and also draws text background
@@ -616,7 +616,7 @@ local function DrawPlaylistGui()
         NumberOfPlayListsOnSystem = NumberOfPlayListsOnSystem + 1
     end
 
-    --draw add new butten
+    --draw add new button
     term.setCursorPos(math.floor(ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"] / 2),3 + NumberOfPlayListsOnSystem + PlayerHasScrolledOnPlaylistMenu)
     term.setBackgroundColor(colors.black)
     term.setTextColor(colors.green)
@@ -664,17 +664,13 @@ local function DrawSongSelectionMenu()
     NumberOfSongsInPlaylist = 0
     SongsInPlaylists = fs.list(DriveToBootOff .. "songs/playlists/" .. SongPlaying.PlaylistPlayerHasOpen)
     for i=1,#SongsInPlaylists do
-        --draws the remove butten
-        term.setCursorPos(1 + ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"],5 + i + SongSelectionScroll)
-        term.setTextColor(colors.white)
-        term.setBackgroundColor(colors.red)
+        --draws the remove button
+        term.setCursorPos(2 + ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"],5 + i + SongSelectionScroll)
+        term.setTextColor(colors.red)
+        term.setBackgroundColor(colors.gray)
         term.write("x")
 
-        --draws the move butten
-        term.setCursorPos(2 + ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"],5 + i + SongSelectionScroll)
-        term.setTextColor(colors.white)
-        term.setBackgroundColor(colors.blue)
-        term.write("+")
+        
 
         --draws the song name
         term.setTextColor(colors.white)
@@ -683,12 +679,12 @@ local function DrawSongSelectionMenu()
         else
             term.setBackgroundColor(colors.gray)
         end
-        term.setCursorPos(3 + ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"],5 + i + SongSelectionScroll)
+        term.setCursorPos(4 + ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"],5 + i + SongSelectionScroll)
         term.write(SongsInPlaylists[i] .. "                                                                                        ")
         NumberOfSongsInPlaylist = NumberOfSongsInPlaylist + 1
     end
 
-    --draw add new butten
+    --draw add new button
     term.setCursorPos(math.floor((MonitorData.X - ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"]) / 2) + ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"],6 + NumberOfSongsInPlaylist + SongSelectionScroll)
     term.setBackgroundColor(colors.gray)
     term.setTextColor(colors.green)
@@ -832,12 +828,12 @@ local function EventHandler()
                     
                 end
             end
-            --player is clicking on the close butten
+            --player is clicking on the close button
             if MouseClickY == (MonitorData.Y - 1) and MouseClickX == (MonitorData.X - 1)  then
                 SongPlaying.SongStopped = true
 
             end
-            --player is clicking on the skip butten
+            --player is clicking on the skip button
             if MouseClickY == (MonitorData.Y - 1) and MouseClickX == (MonitorData.X - 2)  then
                 SongPlaying.CorrentSongBeingPlayed = nil
             end
@@ -849,7 +845,7 @@ local function EventHandler()
                 SettingsMenu()
 
             else
-                --looks if they are clicking on the new playlist butten
+                --looks if they are clicking on the new playlist button
                 if MouseClickY == (3 + NumberOfPlayListsOnSystem - PlayerHasScrolledOnPlaylistMenu) then
                     local Temp = preformPopUp("Enter the name of the playlist")
                     fs.makeDir(DriveToBootOff .. "songs/playlists/" .. Temp)
@@ -876,8 +872,8 @@ local function EventHandler()
         else
             --looks if they are clicking on a song
             if MouseClickY > 4 + SongSelectionScroll and MouseClickY < NumberOfSongsInPlaylist + 6 + SongSelectionScroll then
-                --look if they are clicking on the remove butten
-                if MouseClickX == (1 + ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"]) then
+                --look if they are clicking on the remove button
+                if MouseClickX == (2 + ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"]) then
                     if preformPopUp("type yes to confirm you would like to delete this") == "yes" then
                         fs.delete(DriveToBootOff .. "songs/playlists/" .. SongPlaying.PlaylistPlayerHasOpen .. "/" .. SongsInPlaylists[MouseClickY - 5 - SongSelectionScroll])
                         SongsInPlaylists = fs.list(DriveToBootOff .. "songs/playlists/" .. SongPlaying.PlaylistPlayerHasOpen)
@@ -890,7 +886,7 @@ local function EventHandler()
                     SongPlaying.CorrentSongPercent = 0
                     SongPlaying.SongByteProgress = 0
                 end
-                --look if they are clicking on the addnew butten
+                --look if they are clicking on the addnew button
             elseif MouseClickY == (6 + NumberOfSongsInPlaylist + SongSelectionScroll) then
                 local URL = preformPopUp("Enter the URL or drag and drop")
                 if not (URL == nil) then
