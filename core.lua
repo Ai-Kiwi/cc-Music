@@ -1,3 +1,4 @@
+local args = {...}
 --cleanup screen
 term.setBackgroundColor(colors.black)
 term.setTextColor(colors.white)
@@ -20,6 +21,18 @@ local NumberOfSongsInPlaylist = 0
 if DevMode == true then
     DoUpdates = false
     verson = verson.." (DEV)"
+    term.setCursorPos(1,1)
+    term.setTextColor(colors.red)
+    print("Danger you are using dev verson of the program")
+    print("things like auto updates will not work")
+    print("if you are a developer you can disable this va adding dev as a boot argument")
+    if args[1] == "dev" then
+    else
+        sleep(10)
+    end
+    term.setTextColor(colors.white)
+    term.clear()
+    term.setCursorPos(1,1)
 else
     DoUpdates = true
 end
@@ -609,7 +622,11 @@ local function DrawPlaylistGui()
 
     --draw verson text
     term.setCursorPos(1,MonitorData.Y - 1)
-    term.setTextColor(colors.green)
+    if DevMode == true then
+        term.setTextColor(colors.green)
+    else
+        term.setTextColor(colors.blue)
+    end
     term.setBackgroundColor(colors.black)
     term.write(TextCutOff("v" .. verson,ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"]))
 
