@@ -57,6 +57,7 @@ wget run https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/install.lua
  - fix pauseing song skips backwards
  - make it so that you can just pick another song and start playing while one is playing and it doesnt bug out
  - fix EventHandler() auto finding speaker
+ - clean up crash when you have no speaker
 
 # contributing
 if you would like to make any changes please feel free to help out! (however make sure to only upload to dev branch)
