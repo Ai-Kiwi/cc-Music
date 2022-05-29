@@ -57,9 +57,8 @@ wget run https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/install.lua
  - fix the lag after you 
 
 # contributing
-if you would like to make any changes please feel free to help out! (however make sure to only upload to dev branch)
-
-if you would like to help out id suggest you make the following files. They will help you out hugelly with devlopment! (make sure you have craftos-pc installed and then just doubble click bat file to test)
+If you would like to make any changes, please feel free to help out! However, make sure to only upload to the development branch.
+If you would like to help out, I'd suggest you make the following files locally. They will help you out hugely with development! (make sure you have craftos-pc installed and then just double click start.bat file you made to test)
 
 startup.lua
 ```
