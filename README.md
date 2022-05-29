@@ -57,6 +57,8 @@ wget run https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/install.lua
  - song compression
  - api for fancy debug
  - make program that auto removes .dfpwm files
+ - fix if you drag and drop before song add menu
+ - song speed settings
 
 # contributing
 If you would like to make any changes, please feel free to help out! However, make sure to only upload to the development branch.
