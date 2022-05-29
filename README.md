@@ -68,5 +68,5 @@ shell.run("core")
 
 start.bat (make sure to make path your own)
 ```
-powershell -Command "craftos-pc --start-dir '<full path to github download>'"
+powershell -Command "craftos-pc --start-dir '<full path to local github download>'"
 ```
