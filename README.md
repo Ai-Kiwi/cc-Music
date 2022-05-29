@@ -54,7 +54,20 @@ wget run https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/install.lua
  - add doubble buffering to input popup
  - add error screen when failed to find speaker instead of crashing
  - when skipping music it doesnt work with shuffle songs off
+ - fix the lag after you 
 
 # contributing
 if you would like to make any changes please feel free to help out! (however make sure to only upload to dev branch)
 
+if you would like to help out id suggest you make the following files. They will help you out hugelly with devlopment! (make sure you have craftos-pc installed and then just doubble click bat file to test)
+
+startup.lua
+```
+shell.run("attach top speaker top")
+shell.run("core")
+```
+
+start.bat (make sure to make path your own)
+```
+powershell -Command "craftos-pc --start-dir '<full path to github download>'"
+```
