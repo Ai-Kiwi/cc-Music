@@ -53,8 +53,8 @@ wget run https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/install.lua
  - add padding for text
  - add doubble buffering to input popup
  - add error screen when failed to find speaker instead of crashing
- - when skipping music it doesnt work with shuffle songs off
- - fix the lag after you 
+ - skipping music it doesnt work with shuffle songs off
+ - fix the lag after you close a song
 
 # contributing
 If you would like to make any changes, please feel free to help out! However, make sure to only upload to the development branch.
@@ -63,7 +63,7 @@ If you would like to help out, I'd suggest you make the following files locally 
 startup.lua
 ```
 shell.run("attach top speaker top")
-shell.run("core")
+shell.run("core dev")
 ```
 
 start.bat (make sure to make path your own)
