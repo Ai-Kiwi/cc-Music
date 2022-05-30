@@ -7,7 +7,10 @@ term.clear()
 
 --defining values
 verson = "1.3"
-local DevMode = true 
+local DevMode = false
+if args[1] == "dev" then
+    DevMode = true
+end
 local WindowObject = nil
 local MonitorData = {}
 MonitorData.X, MonitorData.Y = term.getSize()
@@ -16,23 +19,11 @@ local NumberOfPlayListsOnSystem = 0
 local PlayerHasScrolledOnPlaylistMenu = 0
 local SongSelectionScroll = 0
 local NumberOfSongsInPlaylist = 0
-
+local DoUpdates = true
 --setup for dev mode
 if DevMode == true then
     DoUpdates = false
     verson = verson.." (DEV)"
-    term.setCursorPos(1,1)
-    term.setTextColor(colors.red)
-    print("Danger you are using dev verson of the program")
-    print("things like auto updates will not work")
-    print("if you are a developer you can disable this va adding dev as a boot argument")
-    if args[1] == "dev" then
-    else
-        sleep(10)
-    end
-    term.setTextColor(colors.white)
-    term.clear()
-    term.setCursorPos(1,1)
 else
     DoUpdates = true
 end
