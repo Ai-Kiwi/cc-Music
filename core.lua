@@ -564,10 +564,32 @@ local function RenderSongPlayingGUI()
     --draw song name
     term.setCursorPos(2,MonitorData.Y - 1)
     term.setBackgroundColor(colors.black)
+
+    local SongNameWritting = SongPlaying.CorrentSongBeingPlayed
+    local SongLengthWritting = SecandsToTime(math.floor(SongPlaying.SizeOfSong / 6000))
+    local SpaceCanWrite = MonitorData.X - 6
+    
+    local SizeCanWrite = (SpaceCanWrite - #SongLengthWritting)
+    local finalTextWriteing = nil
+    local offset = 0
+    --look if text is too long then if it is start wrapping it
+    if ((#SongNameWritting + 2) - SizeCanWrite) < 1 then
+        offset = 0
+        finalTextWriteing = SongNameWritting
+        
+    else
+        offset = os.clock() - (math.floor(os.clock() / (((#SongNameWritting + 2) - SizeCanWrite )*2)) * (((#SongNameWritting + 2) - SizeCanWrite)*2))
+        finalTextWriteing = (SongNameWritting .. "   " .. SongNameWritting):sub(1 + offset,SizeCanWrite + offset)
+    end
+
+    
+
     term.setTextColor(colors.white)
-    term.write(SongPlaying.CorrentSongBeingPlayed)
+    term.write(finalTextWriteing)
+
+    term.setCursorPos(MonitorData.X - (#SongLengthWritting + 3),MonitorData.Y - 1)
     term.setTextColor(colors.gray)
-    term.write((" - " .. SecandsToTime(math.floor(SongPlaying.SizeOfSong / 6000))):sub(1,ProgressBarLettersCanBeFilled - #SongPlaying.CorrentSongBeingPlayed))
+    term.write(SongLengthWritting)
     
     
     term.setCursorPos(MonitorData.X - 1,MonitorData.Y - 1)
