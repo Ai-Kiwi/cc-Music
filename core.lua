@@ -620,19 +620,21 @@ local function DrawPlaylistGui()
 
     --loop though every item in the playlist
     for i=1,#SongsPlaylists do
-        --draw the delete button
-        term.setCursorPos(1,2 + i + PlayerHasScrolledOnPlaylistMenu)
-        term.setTextColor(colors.red)
-        term.setBackgroundColor(colors.black)
-        term.write("x")
 
-        --draw outline and also draws text background
-        term.setTextColor(colors.white)
+        --gets the background color of the playlist (different if selected)
         if SongPlaying.PlaylistPlayerHasOpen == SongsPlaylists[i] then
             term.setBackgroundColor(colors.gray)
         else
             term.setBackgroundColor(colors.black)
         end
+
+        --draw the delete button
+        term.setCursorPos(1,2 + i + PlayerHasScrolledOnPlaylistMenu)
+        term.setTextColor(colors.red)
+        term.write("x")
+
+        --draw outline
+        term.setTextColor(colors.white)
         term.setCursorPos(2,2 + i + PlayerHasScrolledOnPlaylistMenu)
         term.write((SongsPlaylists[i] .. "                                                                                        "):sub(1,ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"] - 1))
         NumberOfPlayListsOnSystem = NumberOfPlayListsOnSystem + 1
@@ -686,21 +688,20 @@ local function DrawSongSelectionMenu()
     NumberOfSongsInPlaylist = 0
     SongsInPlaylists = fs.list(DriveToBootOff .. "songs/playlists/" .. SongPlaying.PlaylistPlayerHasOpen)
     for i=1,#SongsInPlaylists do
-        --draws the remove button
-        term.setCursorPos(2 + ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"],5 + i + SongSelectionScroll)
-        term.setTextColor(colors.red)
-        term.setBackgroundColor(colors.gray)
-        term.write("x")
-
-        
-
-        --draws the song name
-        term.setTextColor(colors.white)
+        --set the background color (differnt if item is selected)
         if SongPlaying.CorrentSongBeingPlayed == SongsInPlaylists[i] then
             term.setBackgroundColor(colors.lightGray)
         else
             term.setBackgroundColor(colors.gray)
         end
+
+        --draws the remove button
+        term.setCursorPos(2 + ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"],5 + i + SongSelectionScroll)
+        term.setTextColor(colors.red)
+        term.write("x ")
+
+        --draws the song name
+        term.setTextColor(colors.white)
         term.setCursorPos(4 + ListOfSettings["PLAYLIST_MENU_SIZE"]["Value"],5 + i + SongSelectionScroll)
         term.write(SongsInPlaylists[i] .. "                                                                                        ")
         NumberOfSongsInPlaylist = NumberOfSongsInPlaylist + 1
