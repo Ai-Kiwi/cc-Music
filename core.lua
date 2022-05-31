@@ -35,17 +35,17 @@ local ListOfSettings = {}
 local VALUES_LOADED_IN = {}
 
 --load values from file
-local file = fs.open("CCMUSIC.config","r")
+local file = fs.open("CCMusicSettings.json","r")
 if file then
     VALUES_LOADED_IN = file.readAll()
     file.close()
-    VALUES_LOADED_IN = textutils.unserialise(VALUES_LOADED_IN)
+    VALUES_LOADED_IN = textutils.unserialiseJSON(VALUES_LOADED_IN)
 
 end
 
 --function to save the settings values to file
 local function SaveSettings()
-    local file = fs.open("CCMUSIC.config","w")
+    local file = fs.open("CCMusicSettings.json","w")
     local NewListOfSettings = {}
     
     for i,v in pairs(ListOfSettings) do
@@ -54,7 +54,7 @@ local function SaveSettings()
     end
 
     if file then
-        file.write(textutils.serialise(NewListOfSettings))
+        file.write(textutils.serialiseJSON(NewListOfSettings))
         file.close()
         
     end
