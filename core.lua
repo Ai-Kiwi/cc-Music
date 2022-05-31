@@ -161,6 +161,20 @@ local function SecandsToTime(Secands,FormatMode)
     return OutPutString
 end
 
+local function CreateCrash(ErrorMessage)
+    --remove doubble buffer because yes
+    term.redirect(term.native())
+    --crash go brr
+    term.setBackgroundColor(colors.black)
+    term.setTextColor(colors.red)
+    term.setCursorPos(1,1)
+    term.clear()
+    print("CCMusic - " .. verson)
+    print("")
+    print("CCMusic has crashed")
+    error(ErrorMessage, 2)
+
+end
 
 local function DownloadFromWeb(URL,FilePath,DontUseBufferBreaker,UseBin)
     --get funny message for user
@@ -732,6 +746,9 @@ local function PlaySong()
     local buffer = ""
     local dfpwm = require("cc.audio.dfpwm")
     local speaker = peripheral.find("speaker")
+    if speaker == nil then
+        CreateCrash("No speaker found")
+    end
 
     local decoder = dfpwm.make_decoder()
     
@@ -826,6 +843,9 @@ end
 --handles the event handler
 local function EventHandler()
     local speaker = peripheral.find("speaker")
+    if speaker == nil then
+        CreateCrash("No speaker found")
+    end
     local EventName, EventParam1, EventParam2, EventParam3 = os.pullEvent()
     -- event, button, x, y
     --looks if it is the player clicking
@@ -959,6 +979,9 @@ end
 end
 
 
-
-
 parallel.waitForAny(MainSystem, PlaySong)
+--program has finished probs crashed but idk
+
+
+--remove doubble buffer because yes
+term.redirect(term.native())
