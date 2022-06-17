@@ -367,7 +367,6 @@ local function LookForNewSongDragAndDropped()
 end
 
 
---User pop up menu - TODO: fix glitching with craftos-pc
 local function preformPopUp(Message)
     --defines values needed for the pop up
     UserInput = ""
