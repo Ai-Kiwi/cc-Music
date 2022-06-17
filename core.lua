@@ -347,16 +347,25 @@ local function PlayRandomSongInPlayList()
 
 end
 
+local function tableContains(table, element)
+    for _, value in pairs(table) do
+      if value == element then
+        return true
+      end
+    end
+    return false
+end
+
 local LastScanFilesOnSystem = fs.list("")
 --look for new songs
 local function LookForNewSongDragAndDropped()
     local NewFiles = fs.list("")
     for i=1,#NewFiles do
-        if LastScanFilesOnSystem[i] ~= NewFiles[i] then
+        if tableContains(LastScanFilesOnSystem, NewFiles[i]) == false then
             --look for songs that have been added
-
+    
             local NewName = NewFiles[i]
-
+    
             if string.sub(NewName, #NewName -5, #NewName) == ".dfpwm" then
                 NewName = string.sub(NewName, 1, #NewName -6)
             end
