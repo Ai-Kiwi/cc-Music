@@ -6,7 +6,7 @@ term.setCursorPos(1,1)
 term.clear()
 
 --defining values
-verson = "1.3"
+verson = "1.4"
 local DevMode = false
 if args[1] == "dev" then
     DevMode = true
