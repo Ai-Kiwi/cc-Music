@@ -10,11 +10,10 @@ wget run https://raw.githubusercontent.com/Ai-Kiwi/cc-Music/main/install.lua
 ```  
 # how to use  
   
-**how to download a song.**
+**how to download a song.**  
 1: obtain a song from YouTube or another source.  
 2: Use music.madefor.cc to transfer to the correct format.  
-3: Post to a website such as 10 minute hosting.  
-4: In the app, add a song based on that url.  
+3: drag and drop the file into the playlist you would like  
 
 # contributing
 If you would like to make any changes, please feel free to help out! However, make sure to only upload to the development branch.
