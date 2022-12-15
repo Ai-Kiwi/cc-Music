@@ -1,5 +1,3 @@
-/CCMUSIC.config
-/songs/
-/startup.lua
-/start.bat
-/CCMusicSettings.json
+/CCMusic/
+bigfont
+start.bat
