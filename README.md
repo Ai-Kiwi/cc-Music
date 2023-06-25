@@ -3,6 +3,10 @@ A straightforward music player interface for cc-tweaked!
 ![2022-05-30_17 28 09](https://user-images.githubusercontent.com/66819523/170923007-f0e3534d-198f-4152-83d5-84f92c90d78c.gif)
 
 
+# notice
+CC:Music is currently being rewritten from scratch so updates to this branch will not happen much, to use new brach please use dev branch. Thus there are quite a few bugs and this program appears to not fully work with new verison of cc tweaked.
+
+
 # install
   
 ```
